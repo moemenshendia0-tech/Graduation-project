@@ -1,0 +1,27 @@
+Finding: Temporal Correlation of Suspicious Network Activity
+
+Capture date: 2024-11-26 (UTC)
+Internal host: 10.11.26.183
+
+Timeline:
+- 04:50:11 UTC: TLS connection observed to 213.246.109.5
+  with SNI classicgrand.com.
+- 04:50:14 UTC: TLS connections observed to 193.42.38.139
+  with SNI modandcrackedapk.com.
+- 04:50:45 UTC: HTTP POST traffic observed to
+  194.180.191.64:443 using NetSupport Manager/1.3.
+- NetSupport-like POST traffic continued periodically
+  until 05:43:29 UTC.
+
+Assessment:
+The temporal proximity of these connections warrants further
+investigation. The packet capture alone does not establish a
+causal relationship between the domains and the NetSupport traffic.
+Malicious activity and data exfiltration are not confirmed.
+
+Recommended follow-up:
+- Validate whether NetSupport was authorized on the endpoint.
+- Review endpoint process execution and persistence artifacts.
+- Correlate with DNS, proxy, firewall, and endpoint security logs.
+- Investigate the TLS destinations using trusted threat-intelligence
+  sources and the original capture.

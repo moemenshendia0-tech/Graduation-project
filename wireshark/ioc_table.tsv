@@ -1,0 +1,6 @@
+Type	Value	Related_Host	Evidence	Assessment
+IPv4	194.180.191.64	10.11.26.183:443	58 periodic NetSupport HTTP POST requests; Suricata alerts	High-priority suspicious; verify authorization
+Domain	modandcrackedapk.com	10.11.26.183	DNS resolution to 193.42.38.139; TLS SNI observed	Requires investigation
+IPv4	193.42.38.139	10.11.26.183:443	TLS connections with SNI modandcrackedapk.com	Requires investigation
+Domain	classicgrand.com	10.11.26.183	DNS resolution to 213.246.109.5; TLS connections observed	Requires investigation
+IPv4	213.246.109.5	10.11.26.183:443	TLS connections associated with classicgrand.com	Requires investigation

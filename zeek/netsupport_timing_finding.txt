@@ -1,0 +1,26 @@
+Finding: Periodic NetSupport HTTP POST communication
+
+Source host: 10.11.26.183
+Destination IP: 194.180.191.64
+Destination port: 443
+HTTP path: /fakeurl.htm
+User-Agent: NetSupport Manager/1.3
+
+Total POST requests: 58
+Unique source TCP ports: 2
+Observation window: 52.73 minutes
+Intervals between requests: 57
+Intervals between 50 and 70 seconds: 51
+Average qualifying interval: 60.14 seconds
+Minimum qualifying interval: 60.05 seconds
+Maximum qualifying interval: 60.30 seconds
+
+Assessment:
+The repeated periodic HTTP POST requests are consistent with
+beacon-like remote administration traffic and warrant investigation.
+These observations alone do not prove malicious execution,
+command-and-control, or data exfiltration.
+
+Recommended validation:
+Correlate with endpoint process execution, installed remote
+administration software, persistence mechanisms, and security logs.

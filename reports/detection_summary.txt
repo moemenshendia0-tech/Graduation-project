@@ -1,0 +1,26 @@
+Detection Summary: NetSupport-like periodic communication
+
+Source: 10.11.26.183
+Destination: 194.180.191.64:443
+HTTP URI: http://194.180.191.64/fakeurl.htm
+User-Agent: NetSupport Manager/1.3
+
+Zeek:
+- 58 HTTP POST requests
+- 2 source TCP ports
+- 52.73-minute observation span
+- 51 of 57 intervals fell between 50 and 70 seconds
+- Average of those intervals: 60.14 seconds
+
+Suricata:
+- 58 ET REMOTE_ACCESS NetSupport Remote Admin Checkin alerts
+- 58 ET INFO HTTP traffic on port 443 (POST) alerts
+
+Assessment:
+High-priority suspicious remote-administration traffic with
+regular beacon-like timing. Malicious use is not yet confirmed.
+No direct proof of data exfiltration from these findings alone.
+
+MITRE ATT&CK candidates:
+- T1219 - Remote Access Software (if unauthorized use is verified)
+- Command-and-control behavior is a hypothesis requiring validation.

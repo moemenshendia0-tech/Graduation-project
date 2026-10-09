@@ -150,3 +150,41 @@ Current tasks:
 * [ ] Start controlled attack simulations
 * [ ] Correlate detection results
 * [ ] Complete final investigation reports
+
+---
+
+## Completed Investigation: Suspicious NetSupport-like Traffic
+
+A PCAP dated 26 November 2024 was analyzed using Wireshark/TShark,
+Zeek, Suricata, and RITA.
+
+### Key Findings
+
+- Internal host: `10.11.26.183`
+- External destination: `194.180.191.64:443`
+- HTTP URI: `/fakeurl.htm`
+- Observed User-Agent: `NetSupport Manager/1.3`
+- Zeek identified 58 HTTP POST requests over approximately 52.73 minutes.
+- 51 of 57 request intervals fell between 50 and 70 seconds.
+- Suricata generated NetSupport remote-administration and HTTP POST alerts.
+- Additional TLS connections were observed for `modandcrackedapk.com`
+  and `classicgrand.com`.
+
+### Assessment
+
+The repeated NetSupport-like traffic is suspicious and warrants further
+investigation. The PCAP alone does not confirm malware infection,
+unauthorized remote access, a confirmed C2 channel, or data exfiltration.
+
+### Investigation Artifacts
+
+- `reports/incident_report.md` — full investigation report
+- `reports/detection_summary.txt` — detection summary
+- `reports/timeline_finding.txt` — timeline correlation and assessment
+- `wireshark/ioc_table.tsv` — indicators of compromise under investigation
+- `wireshark/netsupport_http_timeline.tsv` — HTTP request timeline
+- `suricata/netsupport_alerts.tsv` — relevant Suricata alerts
+- `zeek/netsupport_timing_finding.txt` — periodicity analysis
+
+> Raw packet captures and generated raw logs are excluded from version control.
+
