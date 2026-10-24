@@ -3,7 +3,7 @@
 ## 1. Executive Summary
 
 A packet capture dated 26 November 2024 was analyzed using
-Wireshark/TShark, Zeek, Suricata, and RITA.
+Wireshark/TShark, Zeek, and Suricata. RITA use in this specific investigation has not been independently verified.
 
 The primary finding was repeated HTTP POST traffic from internal
 host `10.11.26.183` to external IP `194.180.191.64` on TCP port
@@ -12,7 +12,8 @@ host `10.11.26.183` to external IP `194.180.191.64` on TCP port
 
 Zeek identified 58 HTTP POST requests over approximately 52.73
 minutes. Of 57 request intervals, 51 were between 50 and 70
-seconds, with an average interval of approximately 60.14 seconds.
+seconds. The mean of those 51 intervals was approximately 60.14 seconds;
+the mean across all 57 intervals was approximately 55.51 seconds.
 Suricata also generated 58 NetSupport Remote Admin Checkin alerts
 and 58 alerts for HTTP POST traffic on port 443.
 
@@ -33,7 +34,7 @@ Tools:
 - Wireshark / TShark: packet and protocol inspection
 - Zeek: connection, DNS, HTTP, TLS, and file-related logs
 - Suricata: signature-based network alerts
-- RITA: connection analysis and beacon-oriented review
+- RITA: not included as a verified analysis step because its use in this investigation could not be independently confirmed.
 
 The original capture was analyzed without modifying its contents.
 Derived logs, timelines, and findings were saved separately.
@@ -53,7 +54,8 @@ TCP streams: 77 and 140
 - The requests used two source TCP ports.
 - The observed request sequence spanned approximately 52.73 minutes.
 - 51 of 57 intervals were between 50 and 70 seconds.
-- The average interval was approximately 60.14 seconds.
+- The mean of those 51 intervals was approximately 60.14 seconds.
+- The mean across all 57 intervals was approximately 55.51 seconds.
 - Suricata generated 58 `ET REMOTE_ACCESS NetSupport Remote Admin Checkin`
   alerts and 58 `ET INFO HTTP traffic on port 443 (POST)` alerts.
 - Stream inspection showed `CMD=POLL` and repeated `CMD=ENCD`

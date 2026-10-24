@@ -126,7 +126,8 @@ Network-Traffic-Analysis-C2-Exfil/
 ├── suricata/
 ├── rita/
 ├── simulations/
-└── reports/
+├── reports/
+└── evidence/
 ```
 
 ## Project Scope
@@ -143,20 +144,19 @@ Current tasks:
 * [x] Assign team responsibilities
 * [x] Define project workflow
 * [ ] Prepare project environment
-* [ ] Analyze first PCAP
+* [x] Analyze first PCAP
 * [ ] Configure Zeek
 * [ ] Configure Suricata
 * [ ] Configure RITA
 * [ ] Start controlled attack simulations
-* [ ] Correlate detection results
+* [x] Correlate detection results (initial findings documented; final review pending)
 * [ ] Complete final investigation reports
 
 ---
 
 ## Completed Investigation: Suspicious NetSupport-like Traffic
 
-A PCAP dated 26 November 2024 was analyzed using Wireshark/TShark,
-Zeek, Suricata, and RITA.
+A PCAP dated 26 November 2024 was investigated using Wireshark/TShark, Zeek, and Suricata artifacts. RITA was not found in the current analysis environment, so its use in this specific investigation has not been independently verified.
 
 ### Key Findings
 
@@ -188,3 +188,6 @@ unauthorized remote access, a confirmed C2 channel, or data exfiltration.
 
 > Raw packet captures and generated raw logs are excluded from version control.
 
+## Evidence Inventory
+
+- `reports/evidence_inventory.md` — duplicate-artifact inventory and handling notes.

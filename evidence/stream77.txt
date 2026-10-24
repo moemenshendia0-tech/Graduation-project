@@ -1,0 +1,653 @@
+
+===================================================================
+Follow: tcp,ascii
+Filter: tcp.stream eq 77
+Node 0: 10.11.26.183:53362
+Node 1: 194.180.191.64:443
+220
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    22
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=POLL
+INFO=1
+ACK=1
+
+	215
+HTTP/1.1 200 OK
+Server: NetSupport Gateway/1.8 (Windows NT)
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    61
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=.g+$.{.. \....W..D.6..=M..w}..o..........
+
+448
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:   250
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=u.2h.r..4.]..%y-.....=I...D3.W..i.7?....=@....F.f....&t.[..6ra..L.........o..^0..:]xL.U.9p5T.m.<....m..b'.....b..vj....i1.e...3....>.:}.]-..=JU=M.....{%..|.@....^P...M..Y..'q...Z!.X.m/....'...A..`.{.B..lQ=@..o.ckp=@.r........M.6..
+
+	306
+HTTP/1.1 200 OK
+Server: NetSupport Gateway/1.8 (Windows NT)
+Content-Type: application/x-www-form-urlencoded
+Content-Length:   152
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=u.2h.r.. \....W.h.E..=I....=n~.........c....}.X...),.,.Dq.,.....()4.]..%y-0....*=MdO!E.....=I...qOK...M..Y..z...tiC.R..b..'h[.T...jI
+
+274
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    76
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=l3.<(T{.E.....V....k.9|||$(m..$Cj_........0Mt..s...M.6..
+
+282
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    84
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=l3.<(T{.E.....V....k.9|||$(m..$C.............y>p..4....x.UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+234
+POST http://194.180.191.64/fakeurl.htm HTTP/1.1
+User-Agent: NetSupport Manager/1.3
+Content-Type: application/x-www-form-urlencoded
+Content-Length:    36
+Host: 194.180.191.64
+Connection: Keep-Alive
+
+CMD=ENCD
+ES=1
+DATA=..#..mH..UAA..g.
+
+===================================================================

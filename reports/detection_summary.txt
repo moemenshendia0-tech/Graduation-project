@@ -10,7 +10,8 @@ Zeek:
 - 2 source TCP ports
 - 52.73-minute observation span
 - 51 of 57 intervals fell between 50 and 70 seconds
-- Average of those intervals: 60.14 seconds
+- Mean of the 51 intervals in that range: 60.14 seconds
+- Mean across all 57 intervals: 55.51 seconds
 
 Suricata:
 - 58 ET REMOTE_ACCESS NetSupport Remote Admin Checkin alerts

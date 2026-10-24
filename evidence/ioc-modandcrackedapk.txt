@@ -1,0 +1,7 @@
+Domain: modandcrackedapk.com
+Destination IP: 193.42.38.139
+Destination port: 443
+Internal host: 10.11.26.183
+First observed: 2024-11-26 04:50:14 UTC
+Evidence: TLS SNI observed in PCAP
+Assessment: Requires further investigation
