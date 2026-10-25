@@ -8,6 +8,7 @@ zeek-test/
 zeek-logs/
 suricata/baseline/
 zeek/baseline/
+analysis/
 
 # Local databases and secrets
 *.db
@@ -18,6 +19,23 @@ zeek/baseline/
 *.pem
 *.key
 
-# Python cache
+# Python generated files
 __pycache__/
 *.py[cod]
+
+# Extracted executable and library samples
+*.exe
+*.dll
+
+# Temporary and backup files
+*.bak
+*.premerge.bak
+*~
+*.swp
+
+# Raw stream exports: keep local, publish only reviewed excerpts
+/evidence/stream*.txt
+/evidence/*_full.txt
+
+# Empty or undocumented local placeholder
+/evidence/modandcrackedapk_http.tsv

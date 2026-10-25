@@ -118,6 +118,8 @@ Investigation Report
 Network-Traffic-Analysis-C2-Exfil/
 │
 ├── README.md
+├── scripts/
+├── tests/
 │
 ├── docs/
 ├── pcaps/
@@ -149,7 +151,7 @@ Current tasks:
 * [ ] Configure Suricata
 * [ ] Configure RITA
 * [ ] Start controlled attack simulations
-* [x] Correlate detection results (initial findings documented; final review pending)
+* [x] Validate detector output on the two reviewed captures (broader multi-tool and endpoint correlation remains pending)
 * [ ] Complete final investigation reports
 
 ---
@@ -191,3 +193,60 @@ unauthorized remote access, a confirmed C2 channel, or data exfiltration.
 ## Evidence Inventory
 
 - `reports/evidence_inventory.md` — duplicate-artifact inventory and handling notes.
+
+## Additional Investigation: runner_ilove.exe
+
+A separate investigation examined an HTTP transfer of a Windows executable
+observed in the `2026-10-01-traffic-analysis-exercise.pcap` capture.
+
+- Source host: `10.10.1.128`
+- Download server: `107.175.82.242:9000`
+- Requested path: `/wilow/runner_ilove.exe`
+- HTTP status: `200 OK`
+- Captured response body: `1,646,592` bytes
+- SHA-256: `b789adce70c028a6d17be45ec34667aa95586350ee0c4057e75b138b1ad35061`
+- Threat-intelligence correlation: a matching ThreatFox hash record is documented
+  in the dedicated report.
+- A later connection to `195.63.128.106:443` requires further investigation;
+  the capture alone does not establish that the downloaded file initiated it.
+
+The evidence supports treating the sample as potentially malicious for
+defensive handling. Execution, host compromise, causal command-and-control
+activity, and data exfiltration have not been established by the available
+packet evidence.
+
+Detailed documentation:
+- `reports/incident_runner_ilove.md` — investigation report
+- `reports/runner_ilove_iocs.csv` — investigation indicators
+- `reports/runner_ilove_evidence_checklist.md` — evidence review checklist
+
+The extracted executable and local batch-analysis output are excluded from
+Git. Do not execute the sample on a normal workstation.
+
+
+## Local Detector Utilities
+
+The Python scripts operate on existing Zeek TSV logs and write derived output under the ignored local `analysis/` directory. Keep original PCAPs, extracted executables, and raw stream exports out of public Git history.
+
+Run syntax and regression checks:
+
+```bash
+python3 -m py_compile scripts/detect_network_anomalies.py scripts/analyze_post_patterns.py scripts/build_incident_report.py
+python3 -m unittest discover -s tests -v
+```
+
+Example: process the available August capture's existing Zeek logs:
+
+```bash
+python3 scripts/detect_network_anomalies.py \
+  --logs analysis/batch/2026-08-09-traffic-analysis-exercise/zeek \
+  --out analysis/detection-results/2026-08-09
+python3 scripts/build_incident_report.py \
+  --input analysis/detection-results/2026-08-09/alerts.json \
+  --out analysis/detection-results/2026-08-09/incident_candidates.json
+python3 scripts/analyze_post_patterns.py \
+  --logs analysis/batch/2026-08-09-traffic-analysis-exercise/zeek \
+  --out analysis/detection-results/2026-08-09/post_patterns.json
+```
+
+These outputs are investigation leads, not proof of compromise, command-and-control, or successful exfiltration. The incident builder only correlates overlapping aggregate time ranges; validate individual events before drawing causal conclusions.

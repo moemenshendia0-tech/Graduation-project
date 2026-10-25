@@ -1,0 +1,240 @@
+
+========================================================================
+SAMPLE: 2026-08-09-traffic-analysis-exercise
+========================================================================
+
+Suricata alert lines: 41
+     18  Classification: Malware Command and Control Activity Detected
+     18  Classification: Generic Protocol Command Decode
+      3  Classification: Misc activity
+      2  Classification: Potentially Bad Traffic
+
+Top connection source IPs:
+    374  172.16.8.49
+    281  172.16.8.53
+      3  172.16.8.8
+      1  0.0.0.0
+Top connection destination IPs:
+    349  172.16.8.8
+     16  172.16.8.255
+     16  146.59.71.167
+     16  38.182.168.246
+     11  150.171.28.11
+      9  23.200.156.216
+      8  150.171.27.11
+      8  45.130.41.161
+      8  172.67.162.153
+      8  121.54.163.148
+
+DNS rows: 252
+     38  wpad.firsttolast.tech
+     20  edge.microsoft.com
+     16  www.bing.com
+      8  _ldap._tcp.default-first-site-name._sites.dc._msdcs.firsttolast.tech
+      6  firsttolast-dc.firsttolast.tech
+      6  config.edge.skype.com
+      6  www.msn.com
+      6  assets.msn.com
+      6  edge-consumer-static.azureedge.net
+      6  _googlecast._tcp.local
+      5  _ldap._tcp.dc._msdcs.firsttolast.tech
+      5  mobile.events.data.microsoft.com
+      5  windows.msn.com
+      5  login.microsoftonline.com
+      5  v10.events.data.microsoft.com
+
+HTTP rows: 176
+Top HTTP hosts:
+     38  download.windowsupdate.com
+     16  www.grinswakebthu.info
+     16  www.taibeinan.cc
+      8  www.legenda-sochi.com
+      8  www.titanium303.com
+      8  www.21207628.shop
+      8  www.kentmediallc.com
+      8  www.earthframe.site
+      8  www.p3x63q.garden
+      8  www.z61gqw.beer
+      8  www.www-bet456.co
+      8  www.moxom.online
+      8  www.thvwzs.com
+      8  www.devinnovationhab.team
+      8  www.amlgames.site
+Top HTTP host + URI combinations:
+     14  www.grinswakebthu.info/irpw/
+     14  www.taibeinan.cc/lqjm/
+      7  www.legenda-sochi.com/8nw8/
+      7  www.titanium303.com/r7l3/
+      7  www.21207628.shop/hut9/
+      7  www.kentmediallc.com/7qex/
+      7  www.earthframe.site/v2r8/
+      7  www.p3x63q.garden/ttsm/
+      7  www.z61gqw.beer/nxc3/
+      7  www.www-bet456.co/h3j8/
+      7  www.moxom.online/1l1j/
+      7  www.thvwzs.com/tza3/
+      7  www.devinnovationhab.team/rd80/
+      7  www.amlgames.site/ll40/
+      2  www.msftconnecttest.com/connecttest.txt
+
+========================================================================
+SAMPLE: 2026-10-01-traffic-analysis-exercise
+========================================================================
+
+Suricata alert lines: 9
+      3  Classification: Misc activity
+      3  Classification: Potentially Bad Traffic
+      2  Classification: Generic Protocol Command Decode
+      1  Classification: Potential Corporate Privacy Violation
+
+Top connection source IPs:
+    344  10.10.1.128
+      1  0.0.0.0
+      1  10.10.1.10
+Top connection destination IPs:
+    215  10.10.1.10
+     19  10.10.1.255
+      6  142.250.26.94
+      5  150.171.30.11
+      4  23.201.96.192
+      4  35.170.55.9
+      4  142.251.116.95
+      4  52.123.250.8
+      3  20.190.157.14
+      2  48.211.4.16
+
+DNS rows: 172
+     20  wpad.natureforce.com
+      9  settings-win.data.microsoft.com
+      8  edge.microsoft.com
+      6  fonts.gstatic.com
+      6  v10.events.data.microsoft.com
+      5  v20.events.data.microsoft.com
+      4  _ldap._tcp.default-first-site-name._sites.dc._msdcs.natureforce.com
+      4  www.bing.com
+      4  www.google.com
+      4  www.youtube.com
+      4  ctldl.windowsupdate.com
+      3  _googlecast._tcp.local
+      3  login.microsoftonline.com
+      2  _ldap._tcp.dc._msdcs.natureforce.com
+      2  win-lekbu2oy51n.natureforce.com
+
+HTTP rows: 16
+Top HTTP hosts:
+      2  holtandberyl.com
+      2  ctldl.windowsupdate.com
+      1  www.msftconnecttest.com
+      1  edge.microsoft.com
+      1  x2.c.lencr.org
+      1  ye.c.lencr.org
+      1  ye2.c.lencr.org
+      1  ocsp.digicert.com
+      1  oneocsp.microsoft.com
+      1  107.175.82.242:9000
+      1  crt.sectigo.com
+      1  acroipm2.adobe.com
+      1  x1.c.lencr.org
+      1  yr.c.lencr.org
+Top HTTP host + URI combinations:
+      1  www.msftconnecttest.com/connecttest.txt
+      1  edge.microsoft.com/browsernetworktime/time/1/current?cup2key=2:O8RYa-06I_3i7skWhHQ_AOmcesBjj_7ZBdPr_gSHFNw&cup2hreq=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      1  holtandberyl.com/prw
+      1  holtandberyl.com/crv
+      1  x2.c.lencr.org/
+      1  ye.c.lencr.org/
+      1  ye2.c.lencr.org/42.crl
+      1  ocsp.digicert.com/MFEwTzBNMEswSTAJBgUrDgMCGgUABBQ50otx/h0Ztl+z8SiPI7wEWVxDlQQUTiJUIBiV5uNu5g/6+rkS7QYXjzkCEAsMayxGaRewR3PGR9SvwMg=
+      1  oneocsp.microsoft.com/ocsp/MFQwUjBQME4wTDAJBgUrDgMCGgUABBR0TBEVYklX7A9yLoLD9hqmCWDxFgQU3pGGSLehMVkx8UtfB6nciHnaqHYCEzMAAAAMSWShb0QgOyIAAAAAAAw=
+      1  107.175.82.242:9000/wilow/runner_ilove.exe
+      1  crt.sectigo.com/SectigoPublicCodeSigningRootR46.p7c
+      1  acroipm2.adobe.com/assets/Owner/arm/ProcessMAU.txt
+      1  x1.c.lencr.org/
+      1  yr.c.lencr.org/
+      1  ctldl.windowsupdate.com/msdownload/update/v3/static/trustedr/en/pinrulesstl.cab?46aaf5d89671b3f2
+
+========================================================================
+SAMPLE: WebInvestigation
+========================================================================
+
+Suricata alert lines: 0
+
+Top connection source IPs:
+    626  111.224.250.131
+     33  170.40.150.126
+      1  73.124.22.1
+Top connection destination IPs:
+    659  73.124.22.98
+      1  73.124.22.255
+
+DNS rows: 0
+
+HTTP rows: 41709
+Top HTTP hosts:
+  41709  bookworldstore.com
+Top HTTP host + URI combinations:
+      8  bookworldstore.com/search.php?search=book
+      5  bookworldstore.com/admin/login.php
+      4  bookworldstore.com/
+      4  bookworldstore.com/about.php
+      4  bookworldstore.com/index.html
+      3  bookworldstore.com/css/style.css
+      3  bookworldstore.com/favicon.ico
+      3  bookworldstore.com/contact.php
+      3  bookworldstore.com/search.php?search=war
+      3  bookworldstore.com/faq.php
+      2  bookworldstore.com/style.css
+      2  bookworldstore.com/search.php?search=' or 1=1; -- -
+      2  bookworldstore.com/search.php?search=book' UNION ALL SELECT NULL,CONCAT(0x7178766271,(CASE WHEN (AURORA_VERSION() LIKE 0x25) THEN 1 ELSE 0 END),0x7176706a71)-- -
+      2  bookworldstore.com/admin
+      2  bookworldstore.com/admin.php
+
+========================================================================
+SAMPLE: netmetria-focused-scenario
+========================================================================
+
+Suricata alert lines: 22
+     22  Classification: Misc activity
+
+Top connection source IPs:
+    145  10.42.10.21
+    115  10.42.10.22
+Top connection destination IPs:
+    150  10.42.20.53
+     50  198.18.42.52
+     36  10.42.20.40
+      8  10.42.20.123
+      4  10.42.20.10
+      4  10.42.20.20
+      4  10.42.20.30
+      4  10.42.20.15
+
+DNS rows: 150
+     47  www.msftconnecttest.com
+     25  download.windowsupdate.com
+     23  adl.windows.com
+     23  definitionupdates.microsoft.com
+      6  portal.arden.local
+      6  updates.arden.local
+      5  support.arden.local
+      5  files.arden.local
+      5  config.arden.local
+      5  directory.arden.local
+
+HTTP rows: 54
+Top HTTP hosts:
+     22  www.msftconnecttest.com
+      6  portal.arden.local
+      6  updates.arden.local
+      5  support.arden.local
+      5  files.arden.local
+      5  config.arden.local
+      5  directory.arden.local
+Top HTTP host + URI combinations:
+     22  www.msftconnecttest.com/connecttest.txt
+      6  portal.arden.local/api/session
+      6  updates.arden.local/catalog/v1/current.json
+      5  support.arden.local/api/presence
+      5  files.arden.local/api/availability
+      5  config.arden.local/client/v1/settings.json
+      5  directory.arden.local/api/site

@@ -1,0 +1,7 @@
+indicator,type,context,confidence,source
+b789adce70c028a6d17be45ec34667aa95586350ee0c4057e75b138b1ad35061,SHA256,Downloaded executable matching ThreatFox record,High,ThreatFox and local static analysis
+cb50fe432a302b85845bc7ea98742c11,MD5,Same sample according to MalwareBazaar,High,MalwareBazaar
+107.175.82.242:9000,IP:port,Observed HTTP executable download source,High for observed transfer,Zeek HTTP log
+/wilow/runner_ilove.exe,HTTP URI,Observed executable download path,High,Zeek HTTP log
+195.63.128.106:443,IP:port,Observed long connection; C2 association unconfirmed,Medium; causal link unproven,Zeek conn.log and ThreatFox
+lapiscorbel.info,Domain,ThreatFox-reported C2 indicator; not confirmed in summarized capture evidence,Intelligence-only,ThreatFox

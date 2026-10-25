@@ -31,18 +31,16 @@ that has not yet been verified as complete.
 
 ## 4. Baseline Capture
 
-- Repository path: pcaps/baseline.pcap
-- SHA-256: a38267943a7bf3b0e445d7e51cb0a68b3dee797d67081bc9a033f73d079c0f50
+- Local evidence path: `pcaps/baseline.pcap` (intended to remain local and excluded from Git)
+- Recorded SHA-256 reference: `a38267943a7bf3b0e445d7e51cb0a68b3dee797d67081bc9a033f73d079c0f50`
 - Capture format: pcap
 - Encapsulation: Ethernet
-- Approximate packet count reported by capinfos: 26,000
-- Capture start: 2024-11-26 06:49:38
-- Capture end: 2024-11-26 07:43:58
-- TShark HTTP request filter count: 74
+- Approximate packet count in the existing record: 26,000
+- Capture start in the existing record: 2024-11-26 06:49:38
+- Capture end in the existing record: 2024-11-26 07:43:58
+- TShark HTTP request filter count in the existing record: 74
 
-The recorded SHA-256 matches the repository PCAP. The evidence hash record uses
-the repository-relative path pcaps/baseline.pcap.
-
+The local file exists and its SHA-256 matches the recorded reference. It is intentionally excluded from Git publication.
 ## 5. Observed NetSupport-like Traffic
 
 The current incident report and supporting artifacts document:
@@ -122,3 +120,33 @@ For each finding, record the source PCAP and hash, the tool and relevant
 filter or rule, the observed result, the interpretation, and the limitations.
 An alert or periodic connection is an indicator for investigation, not proof
 of compromise or exfiltration.
+
+## 11. Additional Investigation: runner_ilove.exe
+
+A separate investigation report has been prepared for the
+`2026-10-01-traffic-analysis-exercise.pcap` capture.
+
+- Dedicated report: `reports/incident_runner_ilove.md`
+- IOC list: `reports/runner_ilove_iocs.csv`
+- Evidence checklist: `reports/runner_ilove_evidence_checklist.md`
+- Observed transfer: HTTP 200 from `107.175.82.242:9000`, URI
+  `/wilow/runner_ilove.exe`, response body `1,646,592` bytes.
+- Extracted sample SHA-256:
+  `b789adce70c028a6d17be45ec34667aa95586350ee0c4057e75b138b1ad35061`
+- Threat-intelligence correlation is documented in the dedicated report.
+- The later connection to `195.63.128.106:443` remains under investigation.
+
+### Status and limitations
+
+The packet evidence supports documenting the executable transfer and
+prioritizing defensive investigation. It does not independently prove that
+the executable ran, that the host was compromised, that the later connection
+was initiated by the executable, or that data was exfiltrated.
+
+The following remain outstanding until supported by recorded results:
+- Correlate the later connection with endpoint and process telemetry.
+- Review the IOC list against the environment and trusted current sources.
+- Resolve the provenance of the empty `evidence/modandcrackedapk_http.tsv`.
+- Review all proposed Git changes for sensitive information and accidental
+  inclusion of PCAPs, executables, or large generated analysis logs.
+- Review the reports and staged diff before any commit or push.
