@@ -147,18 +147,18 @@ Current tasks:
 * [x] Define project workflow
 * [ ] Prepare project environment
 * [x] Analyze first PCAP
-* [ ] Configure Zeek
-* [ ] Configure Suricata
-* [ ] Configure RITA
+* [x] Configure and run Zeek; preserve the reviewed logs
+* [x] Configure and run Suricata; preserve the reviewed EVE/alert output
+* [x] Configure and run RITA 4.8.2; import fresh Zeek logs into `soc_baseline_zeek810_20261027`
 * [ ] Start controlled attack simulations
 * [x] Validate detector output on the two reviewed captures (broader multi-tool and endpoint correlation remains pending)
-* [ ] Complete final investigation reports
+* [ ] Review and finalize investigation reports and evidence before publication
 
 ---
 
 ## Completed Investigation: Suspicious NetSupport-like Traffic
 
-A PCAP dated 26 November 2024 was investigated using Wireshark/TShark, Zeek, and Suricata artifacts. RITA was not found in the current analysis environment, so its use in this specific investigation has not been independently verified.
+A PCAP dated 26 November 2024 was investigated using Wireshark/TShark, Zeek, and Suricata artifacts. RITA 4.8.2 is available at `$HOME/tools/rita-v4.8.2/rita`, and a fresh Zeek dataset was imported. Further RITA interpretation and endpoint correlation remain pending; the import alone does not establish compromise.
 
 ### Key Findings
 
@@ -183,10 +183,10 @@ unauthorized remote access, a confirmed C2 channel, or data exfiltration.
 - `reports/incident_report.md` — full investigation report
 - `reports/detection_summary.txt` — detection summary
 - `reports/timeline_finding.txt` — timeline correlation and assessment
-- `wireshark/ioc_table.tsv` — indicators of compromise under investigation
-- `wireshark/netsupport_http_timeline.tsv` — HTTP request timeline
-- `suricata/netsupport_alerts.tsv` — relevant Suricata alerts
-- `zeek/netsupport_timing_finding.txt` — periodicity analysis
+- `evidence/ioc_table.tsv` — indicators of compromise under investigation
+- `evidence/netsupport_http_timeline.tsv` — HTTP request timeline
+- `evidence/netsupport_suricata_alerts.tsv` — relevant Suricata alerts
+- `evidence/netsupport_timing_finding.txt` — periodicity analysis
 
 > Raw packet captures and generated raw logs are excluded from version control.
 

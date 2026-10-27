@@ -39,3 +39,9 @@ __pycache__/
 
 # Empty or undocumented local placeholder
 /evidence/modandcrackedapk_http.tsv
+
+# Local Zeek re-run output, backups and root-level Zeek logs
+/*.log
+zeek/baseline_*/
+*.backup_*
+*.pre_finalize_backup

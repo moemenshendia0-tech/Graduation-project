@@ -3,7 +3,9 @@
 ## 1. Executive Summary
 
 A packet capture dated 26 November 2024 was analyzed using
-Wireshark/TShark, Zeek, and Suricata. RITA use in this specific investigation has not been independently verified.
+Wireshark/TShark, Zeek 8.0.10, Suricata 8.0.3, and RITA 4.8.2. A fresh RITA dataset was imported from the Zeek extraction and its beacon and user-agent views were reviewed.
+
+The recorded beacon-SNI row was identical across the fresh dataset and two existing datasets; this similarity does not independently validate the provenance of the older datasets or confirm malicious command-and-control activity.
 
 The primary finding was repeated HTTP POST traffic from internal
 host `10.11.26.183` to external IP `194.180.191.64` on TCP port
@@ -34,7 +36,7 @@ Tools:
 - Wireshark / TShark: packet and protocol inspection
 - Zeek: connection, DNS, HTTP, TLS, and file-related logs
 - Suricata: signature-based network alerts
-- RITA: not included as a verified analysis step because its use in this investigation could not be independently confirmed.
+- RITA 4.8.2: a fresh dataset was imported from the Zeek 8.0.10 extraction as `soc_baseline_zeek810_20261027`. The `show-beacons`, `show-beacons-sni`, and `show-useragents` views were reviewed. The recorded beacon-SNI row was identical across `rita_netsupport`, `soc_wsl_test`, and the fresh dataset; this similarity does not independently validate the provenance of the older datasets or establish a valid hostname in the SNI field.
 
 The original capture was analyzed without modifying its contents.
 Derived logs, timelines, and findings were saved separately.
@@ -142,6 +144,8 @@ available evidence alone.
   evidence from a separate source.
 - No direct evidence of stolen data or confirmed exfiltration was
   established by these findings.
+
+- No matching Zeek TLS record was found for the NetSupport destination in the reviewed `ssl.log`. Traffic on TCP port 443 alone does not establish that the connection used TLS.
 
 ## 8. Recommendations
 

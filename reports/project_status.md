@@ -24,7 +24,7 @@ that has not yet been verified as complete.
 - Zeek: 8.0.10
 - Suricata: 8.0.3
 - suricata-update: 1.3.7
-- RITA: not found in PATH during this review.
+- RITA 4.8.2: available at `$HOME/tools/rita-v4.8.2/rita`; fresh Zeek 8.0.10 logs were imported into `soc_baseline_zeek810_20261027`. The executable is invoked by explicit path; PATH availability is not assumed.
 - NetworkMiner: not found in PATH during this review.
 - Wireshark GUI: not found in the current Ubuntu PATH; this does not establish
   whether it is installed on the Windows host.
@@ -35,9 +35,9 @@ that has not yet been verified as complete.
 - Recorded SHA-256 reference: `a38267943a7bf3b0e445d7e51cb0a68b3dee797d67081bc9a033f73d079c0f50`
 - Capture format: pcap
 - Encapsulation: Ethernet
-- Approximate packet count in the existing record: 26,000
-- Capture start in the existing record: 2024-11-26 06:49:38
-- Capture end in the existing record: 2024-11-26 07:43:58
+- Packet count (TShark): 26,922
+- Capture start: 2024-11-26 04:49:38 UTC (06:49:38 +02:00 local display)
+- Capture end: 2024-11-26 05:43:58 UTC (07:43:58 +02:00 local display)
 - TShark HTTP request filter count in the existing record: 74
 
 The local file exists and its SHA-256 matches the recorded reference. It is intentionally excluded from Git publication.
@@ -95,7 +95,7 @@ Those observations require the same cautious interpretation.
 The following must not be marked complete without supporting artifacts or
 execution records:
 
-- RITA analysis
+- Further RITA analysis and endpoint correlation beyond the completed fresh import and recorded beacon/user-agent review.
 - Controlled attack simulations
 - DNS tunneling detection validation
 - Controlled data-exfiltration detection validation
@@ -108,8 +108,7 @@ execution records:
 2. Preserve and re-verify the PCAP hash if the capture is moved or replaced.
 3. Explain or regenerate the empty HTTP export only after identifying its
    intended filter and source command.
-4. Prepare a separate FormBook report only when its source PCAP and analysis
-   artifacts are available and clearly identified.
+4. Verify that the existing FormBook report matches its identified source PCAP and analysis.
 5. Update README status items to match verified work.
 6. Review files for sensitive content before staging them in Git.
 7. Review the staged diff before committing or pushing changes.
