@@ -45,3 +45,11 @@ __pycache__/
 zeek/baseline_*/
 *.backup_*
 *.pre_finalize_backup
+
+# Beaconing simulation outputs: Zeek re-runs, intermediate attempts, HTML reports
+zeek/s02_modeA*/
+s02_modeA_v2_loopback/
+
+# RITA config backups and working copies (local experimentation only)
+rita/*.bak*
+rita/*.backup_*
