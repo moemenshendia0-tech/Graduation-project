@@ -53,3 +53,4 @@ s02_modeA_v2_loopback/
 # RITA config backups and working copies (local experimentation only)
 rita/*.bak*
 rita/*.backup_*
+evidence/webinvestigation/
