@@ -1,0 +1,26 @@
+Number of packets:   2635
+Capture duration:    74.515655 seconds
+scan start 23:21:21
+dns start 23:21:21
+exfil start 23:21:38
+end 23:22:38
+465/tcp open  smtps
+587/tcp open  submission
+
+Nmap done: 1 IP address (1 host up) scanned in 0.09 seconds
+23:22:32 post 19/20 bytes=262144 status=200
+23:22:35 post 20/20 bytes=262144 status=200
+== conn states ==
+    997 REJ
+     90 SF
+      3 RSTO
+distinct TCP dst ports probed: 1001
+== dns ==
+queries=70 unique=63 mean_len=94.5 max_len=108 over50=60
+== http ==
+POSTs=20 total_request_bytes=5242880
+== suricata (default HOME_NET) ==
+alerts: 655
+    495 SURICATA TCPv4 invalid checksum
+    140 SURICATA UDPv4 invalid checksum
+     20 ET INFO Python BaseHTTP ServerBanner
