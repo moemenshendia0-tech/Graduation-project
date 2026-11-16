@@ -10,6 +10,26 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 
+EXPECTED_TOOLS = {
+    "Zeek": "offline-zeek-detection-engine",
+    "Suricata": "suricata-eve-adapter",
+}
+ALLOWED_SEVERITIES = {"high", "medium", "low", "unknown"}
+ALLOWED_CONFIDENCES = {"high", "medium", "low", "unknown"}
+REQUIRED_ALERT_FIELDS = {
+    "timestamp_utc": str,
+    "rule_id": str,
+    "severity": str,
+    "confidence": str,
+    "title": str,
+    "src_ip": str,
+    "dst_ip": str,
+    "dst_port": (str, int, type(None)),
+    "uid": str,
+    "evidence": str,
+}
+
+
 COLUMNS = [
     "timestamp_utc",
     "first_seen_utc",
@@ -35,14 +55,43 @@ def load_payload(path, expected_tool):
     with path.open(encoding="utf-8") as handle:
         payload = json.load(handle)
 
-    if not isinstance(payload, dict) or not isinstance(payload.get("alerts"), list):
-        raise ValueError(f"Invalid alert payload: {path}")
+    if not isinstance(payload, dict):
+        raise ValueError(f"Invalid alert payload in {path}: expected a JSON object")
+
+    expected_identity = EXPECTED_TOOLS.get(expected_tool)
+    if expected_identity is None:
+        raise ValueError(f"Unknown expected source tool: {expected_tool}")
+    actual_identity = payload.get("tool")
+    if actual_identity != expected_identity:
+        raise ValueError(
+            f"Invalid source tool in {path}: expected tool {expected_identity!r} "
+            f"for {expected_tool}, got {actual_identity!r}"
+        )
+
+    if not isinstance(payload.get("alerts"), list):
+        raise ValueError(f"Invalid alert payload in {path}: 'alerts' must be a list")
 
     alerts = payload["alerts"]
 
-    for alert in alerts:
+    for index, alert in enumerate(alerts):
+        location = f"{path}, alert {index}"
         if not isinstance(alert, dict):
-            raise ValueError(f"Invalid alert entry in: {path}")
+            raise ValueError(f"Invalid alert entry in {location}: expected a JSON object")
+        for field, expected_type in REQUIRED_ALERT_FIELDS.items():
+            if field not in alert:
+                raise ValueError(f"Invalid alert in {location}: missing required field {field!r}")
+            if not isinstance(alert[field], expected_type):
+                raise ValueError(f"Invalid alert in {location}: field {field!r} has an invalid type")
+        if alert["severity"] not in ALLOWED_SEVERITIES:
+            raise ValueError(
+                f"Invalid alert in {location}: severity must be one of "
+                f"{sorted(ALLOWED_SEVERITIES)}, got {alert['severity']!r}"
+            )
+        if alert["confidence"] not in ALLOWED_CONFIDENCES:
+            raise ValueError(
+                f"Invalid alert in {location}: confidence must be one of "
+                f"{sorted(ALLOWED_CONFIDENCES)}, got {alert['confidence']!r}"
+            )
 
     return payload, alerts
 

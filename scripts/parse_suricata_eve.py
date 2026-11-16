@@ -14,13 +14,36 @@ def first_value(value, default="unknown"):
     return str(value) if value not in (None, "") else default
 
 
-def convert_event(event):
-    alert = event.get("alert") or {}
-    metadata = alert.get("metadata") or {}
+def optional_object(container, field, issue_counter):
+    value = container.get(field)
+    if value is None:
+        return {}
+    if not isinstance(value, dict):
+        issue_counter["invalid_optional_fields"] += 1
+        return {}
+    return value
+
+
+def convert_event(event, issue_counter=None):
+    if not isinstance(event, dict):
+        raise ValueError("EVE record must be a JSON object")
+
+    if issue_counter is None:
+        issue_counter = {"invalid_optional_fields": 0}
+
+    alert = event.get("alert")
+    if not isinstance(alert, dict):
+        raise ValueError("EVE alert field must be a JSON object")
 
     sid = alert.get("signature_id")
-    if sid is None:
+    # EVE alert.signature_id is an integer. Check it before optional evidence
+    # so a rejected alert increments only the invalid-shape counter.
+    if not isinstance(sid, int) or isinstance(sid, bool):
         return None
+
+    metadata = optional_object(alert, "metadata", issue_counter)
+    http = optional_object(event, "http", issue_counter)
+    flow = optional_object(event, "flow", issue_counter)
 
     raw_severity = alert.get("severity")
     signature_severity = first_value(
@@ -42,9 +65,6 @@ def convert_event(event):
         ).astimezone(timezone.utc).isoformat()
     except (ValueError, TypeError):
         pass
-
-    http = event.get("http") or {}
-    flow = event.get("flow") or {}
 
     evidence = {
         "source_tool": "Suricata",
@@ -101,6 +121,8 @@ def main():
     alerts = []
     event_counts = {}
     malformed = 0
+    invalid_shape = 0
+    issue_counter = {"invalid_optional_fields": 0}
 
     with eve_path.open(encoding="utf-8", errors="replace") as handle:
         for line in handle:
@@ -110,22 +132,35 @@ def main():
                 malformed += 1
                 continue
 
+            if not isinstance(event, dict):
+                invalid_shape += 1
+                continue
+
             kind = event.get("event_type", "unknown")
             event_counts[kind] = event_counts.get(kind, 0) + 1
 
             if kind == "alert":
-                converted = convert_event(event)
-                if converted:
-                    alerts.append(converted)
+                try:
+                    converted = convert_event(event, issue_counter)
+                except ValueError:
+                    invalid_shape += 1
+                    continue
+                if converted is None:
+                    invalid_shape += 1
+                    continue
+                alerts.append(converted)
 
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    invalid_optional_fields = issue_counter["invalid_optional_fields"]
     payload = {
         "tool": "suricata-eve-adapter",
         "source_file": str(eve_path),
         "event_counts": event_counts,
         "malformed_lines": malformed,
+        "invalid_shape_records": invalid_shape,
+        "invalid_optional_fields": invalid_optional_fields,
         "alert_count": len(alerts),
         "alerts": alerts,
         "disclaimer": "Alerts are investigation leads, not proof of compromise.",
@@ -150,6 +185,8 @@ def main():
 
     print(f"EVE event counts: {event_counts}")
     print(f"Malformed lines: {malformed}")
+    print(f"Invalid-shape records: {invalid_shape}")
+    print(f"Invalid optional fields: {invalid_optional_fields}")
     print(f"Suricata alerts converted: {len(alerts)}")
     print(f"JSON: {json_path.resolve()}")
     print(f"CSV:  {csv_path.resolve()}")
