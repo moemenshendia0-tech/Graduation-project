@@ -24,7 +24,8 @@ that has not yet been verified as complete.
 - Zeek: 8.0.10
 - Suricata: 8.0.3
 - suricata-update: 1.3.7
-- RITA 4.8.2: available at `$HOME/tools/rita-v4.8.2/rita`; fresh Zeek 8.0.10 logs were imported into `soc_baseline_zeek810_20261027`. The executable is invoked by explicit path; PATH availability is not assumed.
+- RITA 4.8.2: available at `$HOME/tools/rita-v4.8.2/rita`; baseline Zeek 8.0.10 logs were imported into `soc_baseline_zeek810_20261027`. `show-beacons-sni` returned a score of 0.968 for source `10.11.26.183` and SNI `194.180.191.64` (58 connections). The executable is invoked by explicit path; PATH availability is not assumed.
+- MongoDB: reachable and verified on 2026-11-04 through the existing `rita-mongo` container. Direct queries confirmed the stored baseline `beaconSNI` result. The earlier outage affected the original partial lab Beacon run; that dataset has not been re-imported or analyzed.
 - NetworkMiner: not found in PATH during this review.
 - Wireshark GUI: not found in the current Ubuntu PATH; this does not establish
   whether it is installed on the Windows host.
@@ -90,28 +91,34 @@ Those observations require the same cautious interpretation.
 - A keyword search for common credential terms returned no matches. This is
   not a guarantee that the artifacts contain no sensitive information.
 
-## 8. Work Not Yet Verified as Complete
+## 8. Verified Work and Outstanding Items
 
-The following must not be marked complete without supporting artifacts or
-execution records:
+Verified completed work:
+- Core analysis tools were available and used for the reviewed PCAP investigations.
+- Baseline Zeek logs were imported into RITA 4.8.2, and the SNI beacon result was recorded.
+- A benign local lab simulation was executed and documented.
+- A controlled Beacon simulation was partially completed: 87 requests/connections were captured and analyzed with Zeek; RITA analysis of this partial dataset has not been performed. MongoDB was restored later, but the partial dataset has not been re-imported or assessed; its duration is below the configured multi-hour thresholds.
+- Detector validation was performed on reviewed captures; this does not represent comprehensive validation of every detection scenario.
 
-- Further RITA analysis and endpoint correlation beyond the completed fresh import and recorded beacon/user-agent review.
-- Controlled attack simulations
-- DNS tunneling detection validation
-- Controlled data-exfiltration detection validation
-- Full correlation of all investigation results
-- Final review of all reports and evidence for publication
+Outstanding work:
+- Re-import and assess the partial Beacon dataset using the restored MongoDB backend, while documenting that its 87-connection capture is shorter than RITA's configured multi-hour analysis thresholds.
+- Perform endpoint/process correlation for the suspicious PCAP findings where endpoint evidence is unavailable.
+- Validate DNS tunneling detection with a documented, reproducible test and supporting artifacts.
+- Validate controlled data-exfiltration detection with a documented, reproducible test and supporting artifacts.
+- Complete cross-tool correlation and review all reports and evidence for publication.
+- Do not describe the lab Beacon simulation as real C2, or the benign HTTP transfer as successful malicious exfiltration.
 
 ## 9. Next Actions
 
-1. Review evidence provenance and compare duplicate files.
-2. Preserve and re-verify the PCAP hash if the capture is moved or replaced.
-3. Explain or regenerate the empty HTTP export only after identifying its
-   intended filter and source command.
-4. Verify that the existing FormBook report matches its identified source PCAP and analysis.
-5. Update README status items to match verified work.
-6. Review files for sensitive content before staging them in Git.
-7. Review the staged diff before committing or pushing changes.
+1. Complete final QA of the project status, evidence inventory, detection coverage matrix, README, and runbook.
+2. Review evidence provenance and compare duplicate files without deleting preserved copies.
+3. Preserve and re-verify PCAP hashes if captures are moved or replaced.
+4. Explain or regenerate the empty HTTP export only after identifying its intended filter and source command.
+5. Verify report-to-PCAP mapping and source evidence for each investigation.
+6. Reassess the partial Beacon dataset with RITA now that MongoDB is available; do not claim a complete Beacon result unless the configured duration requirements and supporting evidence are satisfied.
+7. Complete endpoint correlation and the outstanding DNS tunneling and data-exfiltration validation.
+8. Review files for sensitive content and accidental inclusion of PCAPs, executables, or large generated logs before publication.
+9. Review the final Git diff before any future staging, commit, or push.
 
 ## 10. Assessment Standard
 
@@ -149,3 +156,22 @@ The following remain outstanding until supported by recorded results:
 - Review all proposed Git changes for sensitive information and accidental
   inclusion of PCAPs, executables, or large generated analysis logs.
 - Review the reports and staged diff before any commit or push.
+
+## 12. Reviewed Investigation Reports
+
+The following reports and their evidence have been reviewed at different levels of completeness:
+
+- `reports/incident_report.md`: NetSupport-like repeated HTTP POST activity and remote-administration-related alerts; suspicious, but not proof of compromise or exfiltration.
+- `reports/formbook_investigation_report.md`: FormBook-related HTTP traffic from `172.16.8.49` (113 POST requests plus GET check-ins) to 15 destination groups, with 18 `FormBook CnC Checkin (GET) M5` Suricata alerts; execution, data theft and exfiltration are not established.
+- `reports/incident_runner_ilove.md`: suspicious executable download documented with HTTP response details and extracted sample SHA-256; execution and causal linkage to later traffic remain unconfirmed.
+- `reports/incident_webinvestigation.md`: draft investigation of SQL injection, directory enumeration, login, and PHP upload indicators; successful execution, compromise, callback, and exfiltration remain unconfirmed.
+- `reports/incident_netmetria.md`: draft investigation of SMB enumeration and file-write observations; service creation/start, lateral movement, C2, and exfiltration are not established.
+- `reports/incident_lab_simulation.md`: benign local lab simulation report.
+- `reports/scenario_02_beaconing.md`: controlled Beacon simulation report; partial run only.
+
+## 13. Simulation and Validation Boundaries
+
+- The benign lab simulation generated DNS and HTTP activity in a controlled local environment. Its observed outputs and limitations are documented in `reports/incident_lab_simulation.md`.
+- The controlled Beacon simulation produced 87 periodic HTTP GET requests/connections at approximately 60-second intervals. This is a scripted lab behavior, not evidence of real-world C2.
+- RITA analysis of the partial Beacon dataset was not completed during the original run because MongoDB was unavailable. MongoDB has since been restored, but the partial dataset still requires a separate import and assessment; the baseline SNI result is not a result for the lab simulation. The successful baseline RITA import and SNI result must not be confused with a completed RITA analysis of the Beacon dataset.
+- DNS tunneling, real malicious C2, successful data exfiltration, and execution of suspicious downloaded files remain unconfirmed unless separately supported by evidence.

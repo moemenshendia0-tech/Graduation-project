@@ -158,6 +158,18 @@ Not confirmed by this PCAP alone:
   `195.63.128.106:443` connection.
 - Data exfiltration or the exact data, if any, transferred.
 
+## MITRE ATT&CK Mapping
+
+| Technique | Tactic | Evidence in this investigation | Mapping status |
+|---|---|---|---|
+| [T1105 – Ingress Tool Transfer](https://attack.mitre.org/techniques/T1105/) | Command and Control | The internal host `10.10.1.128` received `runner_ilove.exe` over HTTP from `107.175.82.242:9000`; Zeek recorded HTTP 200 and a 1,646,592-byte response, and the extracted file hash was correlated with threat-intelligence records. | Observed file transfer; adversarial tool-transfer interpretation is supported by threat intelligence, but host compromise is not established. |
+
+**Mapping limitations:**
+- The download is confirmed; execution of the downloaded file is not.
+- The later connection to `195.63.128.106:443` is also listed by ThreatFox as a C2 indicator, but the PCAP does not establish that the downloaded executable initiated it.
+- T1071.001 (Web Protocols) is not assigned as a confirmed C2 technique because the available evidence does not independently establish C2 communication.
+- Persistence and data exfiltration are not established; no techniques are assigned for them.
+
 ## 9. Recommended Response
 
 1. If this reflects a real environment, isolate `10.10.1.128` according to

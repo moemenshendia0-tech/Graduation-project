@@ -51,6 +51,47 @@ The raw row is preserved as recorded. This document does not assign meanings
 to individual columns beyond the score and IP addresses identified from the
 available record.
 
+## MongoDB Verification (2026-11-04)
+
+The RITA MongoDB backend was subsequently restored and queried directly.
+The database `soc_baseline_zeek810_20261027` contains a `beaconSNI`
+document confirming the recorded result:
+
+| Field | Verified value |
+|---|---:|
+| Source | `10.11.26.183` |
+| Destination (`fqdn` field) | `194.180.191.64` |
+| Connections | 58 |
+| Total bytes | 921,162 |
+| Average bytes | 15,882 |
+| Overall score | 0.968 |
+| Temporal score | 1.000 |
+| Data-size score | 0.915 |
+| Duration score | 1.000 |
+| Histogram score | 0.957 |
+| Most frequent interval | 60 seconds (44 occurrences) |
+
+A separate query of the transformed `uconn` collection returned one
+grouped record for the same source/destination pair: 2 connections,
+22,350 bytes, and 3,091.0053 seconds duration. This is a different
+collection and aggregation from `beaconSNI`; the two counts must not
+be treated as interchangeable.
+
+### Import provenance limitation
+
+MongoDB metadata identifies the baseline dataset as analyzed with
+RITA 4.8.2 and records the project Zeek directory as its import source.
+However, the MD5 hashes stored for the imported conn, dns, http, and
+ssl files differ from the hashes of the current files in that directory.
+The imported input files are therefore not byte-for-byte verified
+against the current files. Preserve this provenance limitation in
+the final report.
+
+The earlier datasets `rita_netsupport` and `soc_wsl_test` have matching
+MD5 hashes and lengths for their four imported Zeek files. Their
+identical Beacon-SNI output is not independent evidence from separate
+captures.
+
 ## Interpretation
 
 - The standard beacon view returned no results for `soc_wsl_test`.
@@ -144,6 +185,36 @@ was confirmed by removing both limitations in `s02_modeA_v6` (see Follow-up
 above), which produced a correctly-scored beacon result. Neither result is
 evidence of beaconing or C2 in any real investigation; both are synthetic,
 lab-generated traffic used only to validate the detection pipeline.
+
+## Controlled Lab Beacon Run (Simulation, Partial)
+
+This is a benign simulation (`scripts/lab_beacon_client.py`, `scripts/run_lab_beacon.sh`). It is not malware evidence and is kept separate from the real-PCAP investigations.
+
+### Design
+
+- Client `10.99.99.1` and server `203.0.113.5:8000` are IP aliases on `lo`. The client is inside `InternalSubnets` (10.0.0.0/8); the server is outside it and outside the loopback `NeverInclude` range. The baseline `config.yaml` was used unchanged.
+- The client opens a new TCP connection per request from a fixed source address, with a fixed 60 s schedule.
+- Smoke test (6 connections, dataset `lab_smoke_classify_v2`): Zeek logged 6 `SF` connections `10.99.99.1 -> 203.0.113.5:8000`. The RITA import output contained no "internal" warning, and the Host and Beacon analysis stages ran (they were skipped in the loopback test).
+
+### Run `lab_beacon_20261102_211623`
+
+- Planned 750 requests at 60 s; it stopped after 87 (21:16:26 to 22:42:26 UTC). WSL restarted afterwards (lo aliases and MongoDB were gone); the restart as the cause is Inferred.
+- `capture.pcap`: 1,044 packets, 5,160 s, SHA-256 `fe2208fd964c61823aa2aeaf8559c610662f0d954a8315bcd3a593dd13f4d124`.
+- Zeek: 87 connections, all `SF`, all `10.99.99.1 -> 203.0.113.5:8000`. Inter-connection intervals (n=86): mean 60.000 s, sd 0.011 s, min 59.942 s, max 60.059 s. HTTP: 87 `GET /` with status 200 and User-Agent `lab-beacon-sim/1.0`; response bodies were 2,186 bytes (84 times) and 2,025 bytes (3 times), so the server was not serving the intended tiny page (Inferred: a directory listing).
+
+### RITA result
+
+At the time of this partial run, no MongoDB backend was reachable
+(`no reachable servers`), so no RITA score was produced for this dataset.
+MongoDB was subsequently restored and verified for the separate real-PCAP
+baseline dataset. The partial lab Beacon dataset has not yet been
+re-imported or analyzed with RITA; no score is claimed for it.
+
+### Limitations
+
+- 87 connections over about 86 minutes exceed `DefaultConnectionThresh` (23) but are far below `DurationMinHoursSeen` (6) and `HistogramBimodalMinHoursSeen` (11). Any RITA result would be partial.
+- The near-zero interval spread comes from a scripted fixed schedule. Periodicity alone is not evidence of command and control.
+- The varying response size would weaken RITA's data-size component.
 
 ## Evidence Standard
 
