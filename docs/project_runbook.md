@@ -19,6 +19,8 @@ This runbook documents the reviewed project environment, analysis workflows, evi
 
 Repository: `~/projects/soc-migration/network-traffic-project`
 
+The following tool versions and any absolute executable/configuration paths in this runbook describe the reviewed WSL environment; locate the corresponding binaries and configuration files on your own machine before running commands.
+
 Reviewed tool versions:
 - TShark 4.6.4
 - Zeek 8.0.10
@@ -31,7 +33,7 @@ RITA requires a reachable MongoDB backend for dataset import and analysis. In th
 
 ## 3. PCAP Handling and Integrity
 
-Source PCAP folder in WSL:
+**Environment-specific example from the reviewed WSL machine; replace this with the location of your authorized local capture.** This PCAP folder is not part of the Git repository:
 `/mnt/d/DEPI - graduation/PCAPs files/`
 
 Example integrity checks:
@@ -101,6 +103,8 @@ The NetSupport baseline produced a RITA SNI beacon result with score 0.968 for s
 
 ## 7. Standard PCAP Analysis Workflow
 
+Paths such as `/opt/zeek/bin/zeek`, `/etc/suricata/suricata.yaml`, and `/var/lib/suricata/rules/suricata.rules` below are environment-specific Linux examples. Substitute the paths used by your installation; the capture files referenced in reports are not included in Git.
+
 Start by identifying the capture metadata and preserving its hash:
 ```bash
 sha256sum <capture.pcap>
@@ -129,7 +133,72 @@ tshark -r <capture.pcap> -Y tls.handshake.extensions_server_name -T fields -e ip
 
 Use these as starting points, not complete detection logic. Adapt filters to the protocols and evidence present in each capture.
 
-## 8. Reviewed Investigation Notes
+## 8. Reproducible Offline PCAP-to-Unified-Alerts Run
+
+The integration runner processes one PCAP with Zeek and Suricata in offline mode, runs the existing adapters, then merges their candidate alerts. It does not change detection rules or infer incident conclusions. The default output is a unique directory under the system temporary directory; an explicitly supplied output must be absent or empty. A failed run retains its output and failure manifest for review. The sample `pcaps/baseline.pcap` and generated `analysis/` results mentioned below are local validation artifacts and are excluded from Git; supply your own authorized PCAP and choose a new output directory. This workflow requires Python 3.10+, Zeek, Suricata, and accessible Suricata configuration and rules files. Install Python API dependencies with `python3 -m pip install -r requirements-api.txt`; the pipeline itself uses the Python standard library.
+
+From the repository root, after verifying that the input path is the intended capture and that Zeek and Suricata are on `PATH`:
+
+```bash
+python3 scripts/run_offline_unified_pipeline.py --pcap pcaps/baseline.pcap
+```
+
+For an output in ignored local analysis storage, choose a directory that does not already exist or is empty. The configuration/rules paths below are common Linux defaults; they vary by operating system and installation. Do not point output at existing evidence or analysis results:
+
+```bash
+python3 scripts/run_offline_unified_pipeline.py \
+  --pcap pcaps/baseline.pcap \
+  --out analysis/baseline-unified-run \
+  --zeek-bin /opt/zeek/bin/zeek \
+  --suricata-bin suricata \
+  --suricata-config /etc/suricata/suricata.yaml \
+  --suricata-rules /var/lib/suricata/rules/suricata.rules
+```
+
+The runner requires Zeek, Suricata, a readable PCAP, and readable Suricata configuration and rules files. It records the PCAP SHA-256 and size, tool and Python versions, hashes of the Suricata configuration and rules, UTC start/finish times, exact engine arguments, Zeek input counts, Suricata EVE validation counts, alert counts, and unified artifact paths in run_manifest.json. It stops on missing prerequisites or any failed command and does not install dependencies.
+
+Expected output structure (root path is printed by the runner):
+
+```text
+<run>/
+  run_manifest.json
+  zeek/                    # Raw Zeek logs from this PCAP
+  suricata/                # Raw Suricata eve.json and logs
+  zeek_adapter/alerts.json
+  zeek_adapter/alerts.csv
+  suricata_adapter/alerts.json
+  suricata_adapter/alerts.csv
+  unified/alerts.json
+  unified/alerts.csv
+```
+
+unified/alerts.json contains source_metadata for Zeek and Suricata, per-source alert counts, the merged candidate alerts, and a disclaimer. unified/alerts.csv contains the same merged rows. Zero alerts are a valid output and do not establish that a capture is benign. Candidate alerts alone do not prove execution, compromise, C2, or exfiltration. Keep generated raw logs local and preserve the input capture unchanged.
+
+Automated orchestration tests mock external commands; an actual offline run is required separately to validate installed tool/configuration compatibility. The run verified on 2026-11-21 is recorded in `reports/FINALIZATION_REPORT.md`. It generated 2 Zeek and 127 Suricata alerts (129 combined) from the same baseline PCAP. This does not perform deduplication or cross-sensor event correlation.
+
+### API and dashboard demonstration
+
+Use a completed pipeline output, not a guessed `/tmp` path. From the repository root:
+
+```bash
+export UNIFIED_ALERTS_PATH="$PWD/analysis/baseline-unified-run/unified/alerts.json"
+.venv/bin/python -m uvicorn api.main:app --host 127.0.0.1 --port 8000
+```
+
+In a second shell, confirm the API and actual dataset:
+
+```bash
+curl -fsS http://127.0.0.1:8000/health
+curl -fsS http://127.0.0.1:8000/api/stats
+curl -fsS 'http://127.0.0.1:8000/api/alerts?source_tool=Suricata&severity=high&page_size=20'
+```
+
+The validated local run returned 129 total alerts: 1 high, 58 medium, and 70 low; 127 are Suricata and 2 are Zeek. The two Zeek alerts are NET-005. The input PCAP and output dataset are local validation artifacts, not Git-distributed sample data. Run the pipeline using your own authorized capture and the output directory selected above, then set `UNIFIED_ALERTS_PATH` to that output's `unified/alerts.json`. Use a returned `alert_id` with `/api/alerts/{alert_id}` for details.
+
+Flutter analysis, all 12 Flutter tests, the Web release build, and browser integration were verified on 2026-11-21 using the native Windows QA copy and a local FastAPI backend. Against the 129-alert dataset, the browser walkthrough verified search, combined severity/source/search filters, sorting, pagination, alert details, and backend-unavailable handling with Retry and recovery. For exact observed results and limitations, see the superseding QA addendum in `reports/FINALIZATION_REPORT.md`. Explain that Suricata signature alerts and Zeek heuristic alerts are investigation leads; the merge retains source records without deduplicating or correlating them. A candidate alert does not prove compromise, C2, or exfiltration.
+
+## 9. Reviewed Investigation Notes
+
 
 ### NetSupport-like baseline
 
@@ -168,11 +237,11 @@ Interpretation: the sequence may be consistent with administrative discovery or 
 
 The capture also contained HTTP and TLS traffic to `198.18.42.52`. Its purpose was not established. Do not label it command-and-control or exfiltration without additional evidence.
 
-## 9. WebInvestigation and Netmetria Analysis Scripts
+## 10. WebInvestigation and Netmetria Analysis Scripts
 
 These scripts are consecutive analysis stages, not duplicates. Do not delete a script because a higher-numbered one exists. Run every command from the repository root. Outputs go to `evidence/webinvestigation/` and `evidence/netmetria/`, which are excluded from Git and contain raw protocol content (do not publish them). See also `docs/webinvestigation_sqli_runbook.md`.
 
-### 9.1 WebInvestigation (`WebInvestigation.pcap`, SHA-256 `cf31ec09cf2ece5d0a55c750a0fee19af3ab34d4b7125c4781a56025e2721647`)
+### 10.1 WebInvestigation (`WebInvestigation.pcap`, SHA-256 `cf31ec09cf2ece5d0a55c750a0fee19af3ab34d4b7125c4781a56025e2721647`)
 
 | Step | Script | Reads | Produces | Notes |
 |---|---|---|---|---|
@@ -190,7 +259,7 @@ Notes:
 - Steps 6 and 7 hard-code the export directory `objects_stream_650`. Step 4 chooses the stream number dynamically, so for another capture adjust them.
 - Do not run step 6 before reviewing the current report.
 
-### 9.2 Netmetria (`netmetria-focused-scenario.pcap`, SHA-256 `84e66539101bcf14d28ca97c26674096f4afc53e9370a5dd0ef77069cdf850e6`)
+### 10.2 Netmetria (`netmetria-focused-scenario.pcap`, SHA-256 `84e66539101bcf14d28ca97c26674096f4afc53e9370a5dd0ef77069cdf850e6`)
 
 | Step | Script | Reads | Produces | Notes |
 |---|---|---|---|---|
@@ -199,7 +268,7 @@ Notes:
 
 The SMB operation names attached to opnums 12, 15 and 19 come from memory of the MS-SCMR specification and must be verified against the protocol reference before publication.
 
-## 10. Script Requirements, Local Paths and Validation Status
+## 11. Script Requirements, Local Paths and Validation Status
 
 Requirements:
 
@@ -224,7 +293,7 @@ Validation status:
 - Later steps do not check that the outputs of earlier steps exist (for example step 2 reads `http_requests.tsv` without checking it).
 - Raw outputs contain protocol content from the captures, including database content returned by SQL injection in WebInvestigation. Keep them out of Git.
 
-## 11. Troubleshooting and Recovery
+## 12. Troubleshooting and Recovery
 
 - **Suricata permission errors:** use a dedicated writable output directory or the required elevated privileges. Do not change ownership or permissions recursively across system directories.
 - **Suricata socket or cache warnings:** check for an existing Suricata process and configured socket before starting another instance. Do not terminate unrelated processes.
@@ -233,7 +302,7 @@ Validation status:
 - **Docker unavailable in WSL:** verify Docker Desktop is running and WSL integration is enabled for the relevant distribution before relying on containers.
 - **Missing tool:** record that the tool was unavailable in the reviewed environment. Do not report an analysis as completed if it was not run.
 
-## 12. Final Evidence and Reporting Checklist
+## 13. Final Evidence and Reporting Checklist
 
 Before closing an investigation, verify:
 - [ ] Original PCAP path and SHA-256 are recorded.

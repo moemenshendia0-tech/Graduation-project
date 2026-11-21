@@ -2,46 +2,24 @@
 
 ## Network Traffic Analysis & C2/Exfiltration Detection
 
-The project follows a multi-stage network traffic analysis and detection pipeline.
+The unified alert path runs Zeek and Suricata independently against the same offline PCAP. RITA can analyze Zeek logs separately. The alert merge preserves source identity and candidate records; it does not deduplicate or correlate events across sensors.
 
 ```text
-                    Network Traffic
-                          │
-                          ▼
-               ┌─────────────────────┐
-               │ Wireshark / TShark  │
-               │ Packet Analysis     │
-               └──────────┬──────────┘
-                          │
-                          ▼
-               ┌─────────────────────┐
-               │        Zeek         │
-               │   Network Logging   │
-               └──────────┬──────────┘
-                          │
-                          ▼
-               ┌─────────────────────┐
-               │      Suricata       │
-               │   IDS Detection     │
-               └──────────┬──────────┘
-                          │
-                          ▼
-               ┌─────────────────────┐
-               │        RITA         │
-               │ Beacon Detection    │
-               └──────────┬──────────┘
-                          │
-                          ▼
-               ┌─────────────────────┐
-               │    Investigation    │
-               │ Correlation + IOCs  │
-               └──────────┬──────────┘
-                          │
-                          ▼
-               ┌─────────────────────┐
-               │ MITRE ATT&CK +      │
-               │ Final Report        │
-               └─────────────────────┘
+                         PCAP
+              ┌──────────┼──────────┐
+              ▼          ▼          ▼
+       Wireshark/      Zeek      Suricata
+        TShark          │           │
+                        ▼           ▼
+                 Zeek adapter   EVE adapter
+                        └─────┬─────┘
+                              ▼
+                    Candidate-alert merge
+                              ▼
+                       FastAPI → Flutter
+
+              RITA ← Zeek logs (separate analysis)
+              Analyst review → IOCs → report
 ```
 
 ## Laboratory Environment
@@ -74,7 +52,7 @@ The project will use an isolated virtual laboratory:
 5. Process traffic with Suricata.
 6. Analyze IDS alerts.
 7. Use RITA for beaconing analysis.
-8. Correlate findings from all tools.
+8. Compare findings from all tools and correlate only when shared evidence supports the link.
 9. Extract IOCs.
 10. Map relevant behavior to MITRE ATT&CK.
 11. Produce the final investigation report.

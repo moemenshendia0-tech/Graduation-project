@@ -3,14 +3,15 @@
 ## 1. Purpose
 
 This document records the verified state of the Network Traffic Analysis
-& C2/Exfiltration Detection project at the time of review.
+& C2/Exfiltration Detection project. The Flutter Web blocker is resolved as
+recorded in Section 14 below; publication and full evidence review remain pending.
 
 It distinguishes observed evidence from interpretations and from work
 that has not yet been verified as complete.
 
 ## 2. Repository State
 
-- Git branch: main
+- Git branch at the 2026-11-21 review: `feature/unified-detection-pipeline` (one commit ahead of `origin/feature/unified-detection-pipeline`). The repository also has pre-existing tracked modifications and untracked work; see `reports/FINALIZATION_REPORT.md` for the captured inventory.
 - Remote: origin
 - Canonical report directory: reports/
 - The former duplicate incident report was moved to an external review archive.
@@ -175,3 +176,9 @@ The following reports and their evidence have been reviewed at different levels 
 - The controlled Beacon simulation produced 87 periodic HTTP GET requests/connections at approximately 60-second intervals. This is a scripted lab behavior, not evidence of real-world C2.
 - RITA analysis of the partial Beacon dataset was not completed during the original run because MongoDB was unavailable. MongoDB has since been restored, but the partial dataset still requires a separate import and assessment; the baseline SNI result is not a result for the lab simulation. The successful baseline RITA import and SNI result must not be confused with a completed RITA analysis of the Beacon dataset.
 - DNS tunneling, real malicious C2, successful data exfiltration, and execution of suspicious downloaded files remain unconfirmed unless separately supported by evidence.
+
+## 14. Flutter Web and Browser QA Update (2026-11-21)
+
+The Flutter Web release build and browser integration checks have been completed in the native Windows QA copy. `flutter analyze` reported no issues, all 12 Flutter tests passed, and `flutter build web --release --dart-define=API_BASE_URL=http://127.0.0.1:8000` succeeded. In a real browser, the dashboard was verified against FastAPI and the local 129-alert dataset: search, combined filters, sorting, pagination, alert details, and backend-unavailable/retry recovery were exercised. See `reports/FINALIZATION_REPORT.md` Section 14 for observed results. These checks were not rerun during this documentation update.
+
+The earlier UNC shader-output failure is resolved by using a native Windows filesystem for the Flutter QA copy. The PCAP, 129-alert generated dataset, raw engine logs, and build output remain local and are excluded from publication. This update does not constitute a complete review or clearance of the entire `evidence/` directory; report and evidence provenance/content review remains a publication task.

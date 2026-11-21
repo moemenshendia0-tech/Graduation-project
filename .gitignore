@@ -22,6 +22,8 @@ analysis/
 # Python generated files
 __pycache__/
 *.py[cod]
+.venv/
+.pytest_cache/
 
 # Extracted executable and library samples
 *.exe

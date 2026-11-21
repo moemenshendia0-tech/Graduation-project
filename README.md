@@ -35,26 +35,24 @@ The project combines multiple network security tools into a practical traffic an
 ## Project Workflow
 
 ```text
-Network Traffic / PCAP
-          ↓
-   Wireshark / TShark
-          ↓
-         Zeek
-          ↓
-      Suricata
-          ↓
-         RITA
-          ↓
- C2 / Beaconing Detection
-          ↓
-      Investigation
-          ↓
-    IOC Extraction
-          ↓
- MITRE ATT&CK Mapping
-          ↓
-     Final Report
+                      PCAP
+             ┌─────────┼─────────┐
+             ▼         ▼         ▼
+      Wireshark/      Zeek    Suricata
+       TShark          │         │
+                       ▼         ▼
+                 Zeek adapter  EVE adapter
+                       └────┬────┘
+                            ▼
+                 Source-aware alert merge
+                            │
+                    FastAPI → Flutter
+
+       RITA may analyze Zeek logs separately.
+       Analyst review → IOCs → report
 ```
+
+Zeek and Suricata process the same PCAP independently. The unified output combines and labels candidate alerts; it does not deduplicate or correlate events across sensors. RITA is a separate analysis path.
 
 ## Team Structure
 
@@ -94,22 +92,16 @@ Each scenario will follow the same general process:
 
 ```text
 Traffic / PCAP
-      ↓
-Wireshark Analysis
-      ↓
-Zeek Logs
-      ↓
-Suricata Alerts
-      ↓
-RITA Analysis
-      ↓
-Correlation
-      ↓
-IOC Extraction
-      ↓
-MITRE ATT&CK Mapping
-      ↓
-Investigation Report
+      ├── Wireshark / TShark review
+      ├── Zeek logs ──┬── offline detector ──┐
+      │               └── optional RITA      │
+      └── Suricata EVE ── EVE adapter ──────┤
+                                             ▼
+                                  Candidate-alert merge
+                                             ▼
+                               Evidence-based analyst review
+                                             ▼
+                              IOCs / ATT&CK / report
 ```
 
 ## Repository Structure
@@ -138,7 +130,9 @@ All attack simulations and testing activities will be performed inside an isolat
 
 ## Project Status
 
-**Phase 1: research, requirements, architecture and methodology (planned through January 2027).** Early technical work is already completed in draft form: five PCAP investigations, a benign local lab simulation and a partial beacon run (see the report list below). Phase 2 (implementation, integration, detection validation and final delivery) is planned through May/June 2027.
+**Core implementation and integration are complete.** The offline Zeek/Suricata pipeline, read-only FastAPI service, and Flutter Web dashboard are present. Flutter analysis passed with no issues, all 12 Flutter tests passed, the Web release build succeeded from a native Windows filesystem, and browser integration checks passed against the FastAPI backend and the 129-alert validation dataset. Final evidence review and publication checks remain outstanding.
+
+On 21 November 2026, the offline pipeline processed the local, Git-ignored `pcaps/baseline.pcap` (SHA-256 `a38267943a7bf3b0e445d7e51cb0a68b3dee797d67081bc9a033f73d079c0f50`) with Zeek 8.0.10 and Suricata 8.0.3 and generated 129 candidate alerts: 2 from Zeek and 127 from Suricata. The run manifest and generated output are local under `analysis/final-demo-run-20261121-v3/`; this is a reproducible validation run, not a checked-in dataset. The manifest includes SHA-256 and byte size for adapter and unified JSON/CSV artifacts. These alerts are combined, not deduplicated or cross-sensor correlated, and do not establish compromise.
 
 Current tasks:
 
@@ -152,7 +146,8 @@ Current tasks:
 * [x] Configure and run RITA 4.8.2; import fresh Zeek logs into `soc_baseline_zeek810_20261027`
 * [x] Run the local lab simulation and a partial beacon simulation; extended validation remains pending.
 * [x] Validate detector output on the two reviewed captures (broader multi-tool and endpoint correlation remains pending)
-* [ ] Complete final documentation QA, evidence review, and publication checks.
+* [x] Validate the unified offline pipeline, FastAPI endpoints, Flutter static analysis, Flutter widget tests, Web release build, and browser integration (see `reports/FINALIZATION_REPORT.md`).
+* [ ] Complete final evidence review and publication checks.
 
 ---
 

@@ -120,6 +120,24 @@ class SuricataShapeValidationTests(unittest.TestCase):
         self.assertEqual(evidence["http_url"], "/path")
         self.assertEqual(evidence["flow_bytes_toserver"], 456)
 
+    def test_malformed_scalar_optional_fields_do_not_discard_alert(self):
+        event = self.make_event()
+        event["timestamp"] = 123
+        event["src_ip"] = {"unexpected": "object"}
+        event["dest_port"] = [443]
+        event["proto"] = ["TCP"]
+        event["alert"]["signature"] = {"unexpected": "object"}
+        event["alert"]["severity"] = []
+        payload = self.run_adapter([json.dumps(event)])
+        self.assertEqual(payload["alert_count"], 1)
+        self.assertEqual(payload["invalid_optional_fields"], 6)
+        alert = payload["alerts"][0]
+        self.assertEqual(alert["title"], "Suricata SID 12")
+        self.assertEqual(alert["timestamp_utc"], "")
+        self.assertEqual(alert["src_ip"], "")
+        self.assertIsNone(alert["dst_port"])
+        self.assertEqual(alert["severity"], "unknown")
+
     def test_malformed_json_followed_by_valid_record_continues(self):
         payload = self.run_adapter(["{bad json", json.dumps(self.make_event())])
         self.assertEqual(payload["malformed_lines"], 1)

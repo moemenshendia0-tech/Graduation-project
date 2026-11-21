@@ -10,8 +10,29 @@ from pathlib import Path
 
 def first_value(value, default="unknown"):
     if isinstance(value, list):
-        return str(value[0]) if value else default
-    return str(value) if value not in (None, "") else default
+        return first_value(value[0], default) if value else default
+    if isinstance(value, (str, int, float)) and not isinstance(value, bool):
+        text = str(value)
+        return text if text else default
+    return default
+
+
+def optional_text(container, field, issue_counter, default=""):
+    value = container.get(field)
+    if value is None or value == "":
+        return default
+    if not isinstance(value, str):
+        issue_counter["invalid_optional_fields"] += 1
+        return default
+    return value
+
+
+def optional_scalar(container, field, issue_counter):
+    value = container.get(field)
+    if value is None or isinstance(value, (str, int)) and not isinstance(value, bool):
+        return value
+    issue_counter["invalid_optional_fields"] += 1
+    return None
 
 
 def optional_object(container, field, issue_counter):
@@ -44,8 +65,12 @@ def convert_event(event, issue_counter=None):
     metadata = optional_object(alert, "metadata", issue_counter)
     http = optional_object(event, "http", issue_counter)
     flow = optional_object(event, "flow", issue_counter)
+    signature = optional_text(alert, "signature", issue_counter, f"Suricata SID {sid}")
 
     raw_severity = alert.get("severity")
+    if raw_severity is not None and (not isinstance(raw_severity, int) or isinstance(raw_severity, bool)):
+        issue_counter["invalid_optional_fields"] += 1
+        raw_severity = None
     signature_severity = first_value(
         metadata.get("signature_severity"), ""
     ).lower()
@@ -58,7 +83,7 @@ def convert_event(event, issue_counter=None):
         3: "low",
     }.get(raw_severity, "unknown")
 
-    timestamp = event.get("timestamp", "")
+    timestamp = optional_text(event, "timestamp", issue_counter)
     try:
         timestamp = datetime.fromisoformat(
             timestamp.replace("Z", "+00:00")
@@ -68,22 +93,22 @@ def convert_event(event, issue_counter=None):
 
     evidence = {
         "source_tool": "Suricata",
-        "signature": alert.get("signature", ""),
+        "signature": signature,
         "signature_id": sid,
         "suricata_priority": raw_severity,
         "gid": alert.get("gid"),
         "revision": alert.get("rev"),
-        "category": alert.get("category", ""),
+        "category": optional_text(alert, "category", issue_counter),
         "signature_severity": signature_severity,
         "action": alert.get("action", ""),
         "flow_id": event.get("flow_id"),
-        "protocol": event.get("proto", ""),
-        "hostname": http.get("hostname", ""),
-        "http_url": http.get("url", ""),
-        "http_method": http.get("http_method", ""),
-        "http_status": http.get("status"),
-        "flow_bytes_toserver": flow.get("bytes_toserver"),
-        "flow_bytes_toclient": flow.get("bytes_toclient"),
+        "protocol": optional_text(event, "proto", issue_counter),
+        "hostname": optional_text(http, "hostname", issue_counter),
+        "http_url": optional_text(http, "url", issue_counter),
+        "http_method": optional_text(http, "http_method", issue_counter),
+        "http_status": optional_scalar(http, "status", issue_counter),
+        "flow_bytes_toserver": optional_scalar(flow, "bytes_toserver", issue_counter),
+        "flow_bytes_toclient": optional_scalar(flow, "bytes_toclient", issue_counter),
     }
 
     confidence = first_value(metadata.get("confidence"))
@@ -93,10 +118,10 @@ def convert_event(event, issue_counter=None):
         "rule_id": f"SURICATA-{sid}",
         "severity": severity,
         "confidence": confidence.lower(),
-        "title": alert.get("signature", f"Suricata SID {sid}"),
-        "src_ip": event.get("src_ip", ""),
-        "dst_ip": event.get("dest_ip", ""),
-        "dst_port": event.get("dest_port"),
+        "title": signature,
+        "src_ip": optional_text(event, "src_ip", issue_counter),
+        "dst_ip": optional_text(event, "dest_ip", issue_counter),
+        "dst_port": optional_scalar(event, "dest_port", issue_counter),
         "uid": "",
         "correlation": "",
         "related_rule_id": "",
