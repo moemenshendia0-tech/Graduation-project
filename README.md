@@ -35,26 +35,24 @@ The project combines multiple network security tools into a practical traffic an
 ## Project Workflow
 
 ```text
-Network Traffic / PCAP
-          ↓
-   Wireshark / TShark
-          ↓
-         Zeek
-          ↓
-      Suricata
-          ↓
-         RITA
-          ↓
- C2 / Beaconing Detection
-          ↓
-      Investigation
-          ↓
-    IOC Extraction
-          ↓
- MITRE ATT&CK Mapping
-          ↓
-     Final Report
+                      PCAP
+             ┌─────────┼─────────┐
+             ▼         ▼         ▼
+      Wireshark/      Zeek    Suricata
+       TShark          │         │
+                       ▼         ▼
+                 Zeek adapter  EVE adapter
+                       └────┬────┘
+                            ▼
+                 Source-aware alert merge
+                            │
+                    FastAPI → Flutter
+
+       RITA may analyze Zeek logs separately.
+       Analyst review → IOCs → report
 ```
+
+Zeek and Suricata process the same PCAP independently. The unified output combines and labels candidate alerts; it does not deduplicate or correlate events across sensors. RITA is a separate analysis path.
 
 ## Team Structure
 
@@ -94,22 +92,16 @@ Each scenario will follow the same general process:
 
 ```text
 Traffic / PCAP
-      ↓
-Wireshark Analysis
-      ↓
-Zeek Logs
-      ↓
-Suricata Alerts
-      ↓
-RITA Analysis
-      ↓
-Correlation
-      ↓
-IOC Extraction
-      ↓
-MITRE ATT&CK Mapping
-      ↓
-Investigation Report
+      ├── Wireshark / TShark review
+      ├── Zeek logs ──┬── offline detector ──┐
+      │               └── optional RITA      │
+      └── Suricata EVE ── EVE adapter ──────┤
+                                             ▼
+                                  Candidate-alert merge
+                                             ▼
+                               Evidence-based analyst review
+                                             ▼
+                              IOCs / ATT&CK / report
 ```
 
 ## Repository Structure
@@ -138,21 +130,24 @@ All attack simulations and testing activities will be performed inside an isolat
 
 ## Project Status
 
-**Phase 1 — Repository and Project Setup**
+**Core implementation and integration are complete.** The offline Zeek/Suricata pipeline, read-only FastAPI service, and Flutter Web dashboard are present. Flutter analysis passed with no issues, all 12 Flutter tests passed, the Web release build succeeded from a native Windows filesystem, and browser integration checks passed against the FastAPI backend and the 129-alert validation dataset. Final evidence review and publication checks remain outstanding.
+
+On 21 November 2026, the offline pipeline processed the local, Git-ignored `pcaps/baseline.pcap` (SHA-256 `a38267943a7bf3b0e445d7e51cb0a68b3dee797d67081bc9a033f73d079c0f50`) with Zeek 8.0.10 and Suricata 8.0.3 and generated 129 candidate alerts: 2 from Zeek and 127 from Suricata. The run manifest and generated output are local under `analysis/final-demo-run-20261121-v3/`; this is a reproducible validation run, not a checked-in dataset. The manifest includes SHA-256 and byte size for adapter and unified JSON/CSV artifacts. These alerts are combined, not deduplicated or cross-sensor correlated, and do not establish compromise.
 
 Current tasks:
 
 * [x] Create GitHub repository
 * [x] Assign team responsibilities
 * [x] Define project workflow
-* [ ] Prepare project environment
+* [x] Configure the core analysis environment; MongoDB is now operational for baseline RITA analysis, while some optional tools remain unavailable.
 * [x] Analyze first PCAP
 * [x] Configure and run Zeek; preserve the reviewed logs
 * [x] Configure and run Suricata; preserve the reviewed EVE/alert output
 * [x] Configure and run RITA 4.8.2; import fresh Zeek logs into `soc_baseline_zeek810_20261027`
-* [ ] Start controlled attack simulations
+* [x] Run the local lab simulation and a partial beacon simulation; extended validation remains pending.
 * [x] Validate detector output on the two reviewed captures (broader multi-tool and endpoint correlation remains pending)
-* [ ] Review and finalize investigation reports and evidence before publication
+* [x] Validate the unified offline pipeline, FastAPI endpoints, Flutter static analysis, Flutter widget tests, Web release build, and browser integration (see `reports/FINALIZATION_REPORT.md`).
+* [ ] Complete final evidence review and publication checks.
 
 ---
 
@@ -250,3 +245,57 @@ python3 scripts/analyze_post_patterns.py \
 ```
 
 These outputs are investigation leads, not proof of compromise, command-and-control, or successful exfiltration. The incident builder only correlates overlapping aggregate time ranges; validate individual events before drawing causal conclusions.
+
+---
+
+
+
+## Reviewed Investigation Reports
+
+
+
+The following reports document the captures and controlled lab activities reviewed so far. Findings are limited to the evidence available in each capture; suspicious indicators are not, by themselves, proof of host compromise or successful data exfiltration.
+
+
+
+### PCAP investigations
+
+
+
+- [NetSupport-like traffic](reports/incident_report.md) — repeated HTTP POST activity and remote-administration-related alerts. Suspicious behavior; compromise and unauthorized access are not established.
+
+- [FormBook-related HTTP traffic](reports/formbook_investigation_report.md) — suspicious HTTP POST and GET patterns to 15 destination groups (113 POST requests; 18 Suricata FormBook check-in alerts) and related network indicators; packet evidence does not establish endpoint execution or the full infection chain.
+
+- [Runner iLove executable download](reports/incident_runner_ilove.md) — suspicious executable transfer with documented hash and threat-intelligence correlation; execution and causal C2 remain unconfirmed.
+
+- [WebInvestigation](reports/incident_webinvestigation.md) — SQL injection probing and a suspicious uploaded PHP file; report remains a draft, and successful execution or server compromise is unconfirmed.
+
+- [Netmetria-focused scenario](reports/incident_netmetria.md) — SMB enumeration and file-write observations; report remains a draft, and lateral movement or exfiltration is not confirmed.
+
+
+
+### Controlled lab exercises
+
+
+
+- [Benign network simulation](reports/incident_lab_simulation.md) — local scanning, DNS, and HTTP traffic generation with Zeek and Suricata observations; this is not evidence of real malware or external C2.
+
+- [Controlled beaconing scenario](reports/scenario_02_beaconing.md) — documents the beaconing exercise. The later partial run produced 87 requests at approximately 60-second intervals; RITA analysis of that partial dataset was not completed. MongoDB was restored later, but the partial dataset has not been re-imported or analyzed; its duration is below the configured multi-hour thresholds.
+
+
+
+### Project evidence and operating documentation
+
+
+
+- [Evidence inventory](reports/evidence_inventory.md) — evidence and artifact handling.
+
+- [Detection coverage matrix](reports/detection_coverage_matrix.md) — reviewed detection coverage and gaps.
+
+- [Project status](reports/project_status.md) — current project progress and pending work.
+
+- [Project runbook](docs/project_runbook.md) — commands, workflows, and reproducibility notes.
+
+
+
+These investigations do not yet complete validation of DNS tunneling, real command-and-control, or successful data exfiltration. Broader endpoint correlation and final documentation review remain outstanding.

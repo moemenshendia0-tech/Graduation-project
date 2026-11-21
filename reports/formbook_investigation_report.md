@@ -221,6 +221,17 @@ are suspicious in combination.
 - That the captured HTML JavaScript executed.
 - That the executable-download alerts indicate a malicious file.
 
+## MITRE ATT&CK Mapping
+
+| Technique | Tactic | Evidence in this investigation | Mapping status |
+|---|---|---|---|
+| [T1071.001 – Web Protocols](https://attack.mitre.org/techniques/T1071/001/) | Command and Control | 18 Suricata alerts labeled `FormBook CnC Checkin (GET) M5` were correlated with Zeek HTTP requests using network tuples, hostname, URI path, and timestamps. | Potential mapping; signature-indicated C2 behavior, not independently confirmed. |
+
+**Mapping limitations:**
+- The Suricata signature identifies FormBook-related C2-like HTTP activity; it does not prove that the host was infected with FormBook.
+- Repeated HTTP POST requests and large request bodies do not establish data exfiltration. No exfiltration technique is assigned.
+- Malware execution, persistence, and successful command execution are not established by the reviewed network evidence.
+
 ## 10. Recommended Follow-up
 
 1. Preserve the original PCAP and its SHA-256 hash.

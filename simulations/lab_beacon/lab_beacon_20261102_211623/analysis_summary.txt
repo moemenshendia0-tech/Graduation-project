@@ -1,0 +1,23 @@
+== capture identity ==
+fe2208fd964c61823aa2aeaf8559c610662f0d954a8315bcd3a593dd13f4d124  <repo>/simulations/lab_beacon/lab_beacon_20261102_211623/capture.pcap
+File name:           <repo>/simulations/lab_beacon/lab_beacon_20261102_211623/capture.pcap
+Number of packets:   1044
+Capture duration:    5160.002121 seconds
+Earliest packet time: 2026-11-02 23:16:26.671414
+Latest packet time:   2026-11-03 00:42:26.673535
+== zeek ==
+connections: 87
+     87 10.99.99.1	203.0.113.5	8000	tcp
+     87 SF
+first: 2026-11-02 21:16:26 UTC   last: 2026-11-02 22:42:26 UTC
+== inter-connection intervals (s) ==
+n=86 mean=60.000 sd=0.011 min=59.942 max=60.059 within_59_61=86
+== http.log (top 5) ==
+     84 GET	/	200	2186	lab-beacon-sim/1.0
+      3 GET	/	200	2025	lab-beacon-sim/1.0
+== rita import ==
+Failed to connect to database: no reachable servers
+== show-beacons ==
+Failed to connect to database: no reachable servers
+== show-beacons-sni ==
+Failed to connect to database: no reachable servers
