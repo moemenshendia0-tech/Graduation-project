@@ -5,6 +5,23 @@ import 'package:network_traffic_dashboard/models/dashboard_stats.dart';
 import 'package:network_traffic_dashboard/models/malware_analysis.dart';
 
 void main() {
+  test('correlation model distinguishes absent matching from empty result', () {
+    final unavailable = MalwareCorrelations.fromJson({
+      'findings': [],
+      'event_relationships': [],
+    });
+    final completedWithoutMatches = MalwareCorrelations.fromJson({
+      'findings': [],
+      'event_relationships': [],
+      'indicator_matches': [],
+    });
+
+    expect(unavailable.indicatorMatchingAvailable, isFalse);
+    expect(unavailable.indicatorMatches, isEmpty);
+    expect(completedWithoutMatches.indicatorMatchingAvailable, isTrue);
+    expect(completedWithoutMatches.indicatorMatches, isEmpty);
+  });
+
   test('Alert parses the unified schema and preserves evidence as a string', () {
     const evidence =
         '{"source_tool":"Suricata","signature":"HTTP signature","protocol":"TCP","category":"Potentially Bad Traffic","http_url":"http://example.test/path","hostname":"example.test","src_port":51515,"flow_id":8899}';

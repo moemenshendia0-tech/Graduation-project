@@ -27,12 +27,48 @@ zeek/**/ssl.log
 zeek/**/files.log
 suricata/**/eve.json
 suricata/**/fast.log
+suricata/**/stats.log
+suricata/**/suricata.log
+**/suricata/eve.json
+**/suricata/fast.log
+**/suricata/stats.log
+**/suricata/suricata.log
+**/suricata_homenet/
+
+# Private/raw evidence exports and local web investigation output
+/evidence/stream*.txt
+/evidence/*_full.txt
+/evidence/modandcrackedapk_http.tsv
+/evidence/webinvestigation/
+
+# Generated protocol, capture, simulation, and analysis logs
+/*.log
+zeek/**/packet_filter.log
+zeek/**/weird.log
+**/run.out
+**/tcpdump.err
+**/rita_import.out
+**/client.log
+**/server.log
+**/server_keepalive.log
+**/nmap.out
+**/phases.log
+
+# Local Zeek reruns and generated simulation web output
+zeek/s02_modeA*/
+s02_modeA_v2_loopback/
+simulations/**/www/
 
 # Local binaries and backups
 *.exe
 *.dll
 *.bak
 *.backup
+*.pre_*
+*.bak_*
+*.backup_*
+*.pre_finalize_*
+*.swp
 *~
 
 # Flutter generated files
