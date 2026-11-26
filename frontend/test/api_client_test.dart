@@ -101,6 +101,92 @@ void main() {
     );
     client.close();
   });
+
+  test(
+    'MalwareBazaar lookup normalizes the hash and parses metadata',
+    () async {
+      final paths = <String>[];
+      final sha256 = List.filled(64, 'a').join();
+      final client = ApiClient(
+        baseUrl: 'http://example.test',
+        client: MockClient((request) async {
+          paths.add(request.url.path);
+          if (request.url.path == '/api/malware/intel/$sha256') {
+            return http.Response(
+              jsonEncode({
+                'intelligence': {
+                  'provider': 'MalwareBazaar',
+                  'lookup_time': '2026-11-25T12:00:00Z',
+                  'queried_hash': sha256,
+                  'queried_algorithm': 'sha256',
+                  'api_status': 'ok',
+                  'match_status': 'found',
+                  'identifiers': {'sha256_hash': sha256},
+                  'metadata': {
+                    'file_name': 'fixture.bin',
+                    'tags': ['fixture'],
+                  },
+                },
+              }),
+              200,
+            );
+          }
+          if (request.url.path == '/api/malware/samples/$sha256') {
+            return http.Response(
+              jsonEncode({
+                'sha256': sha256,
+                'analyses': [
+                  {
+                    'analysis_id': 'case-fixture',
+                    'hash_status': 'verified',
+                    'sample': {'original_file_name': 'fixture.bin'},
+                  },
+                ],
+              }),
+              200,
+            );
+          }
+          return http.Response('{}', 404);
+        }),
+      );
+
+      final intel = await client.lookupMalwareHash(' ${sha256.toUpperCase()} ');
+      final local = await client.getMalwareSample(' ${sha256.toUpperCase()} ');
+
+      expect(intel.matchStatus, 'found');
+      expect(intel.metadata['file_name'], 'fixture.bin');
+      expect(intel.metadata['tags'], ['fixture']);
+      expect(local.analyses.single.analysisId, 'case-fixture');
+      expect(paths, [
+        '/api/malware/intel/$sha256',
+        '/api/malware/samples/$sha256',
+      ]);
+      client.close();
+    },
+  );
+
+  test('invalid MalwareBazaar hashes are rejected before a request', () async {
+    var requests = 0;
+    final client = ApiClient(
+      client: MockClient((_) async {
+        requests++;
+        return http.Response('{}', 200);
+      }),
+    );
+
+    await expectLater(
+      client.lookupMalwareHash('not-a-hash'),
+      throwsA(
+        isA<ApiException>().having(
+          (error) => error.code,
+          'code',
+          'invalid_hash',
+        ),
+      ),
+    );
+    expect(requests, 0);
+    client.close();
+  });
 }
 
 Map<String, Object?> _alertJson() => {

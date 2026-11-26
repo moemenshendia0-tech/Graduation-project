@@ -1,110 +1,79 @@
-# Raw packet captures
-*.pcap
-*.pcapng
-pcaps/
+# Python environments, caches, and generated output
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
 
-# Generated raw logs and local analysis output
-zeek-test/
-zeek-logs/
-suricata/baseline/
-zeek/baseline/
-analysis/
-
-# Local databases and secrets
-*.db
-*.sqlite
-*.sqlite3
+# Secrets and local stores
 .env
 .env.*
 *.pem
 *.key
+*.db
+*.sqlite
+*.sqlite3
 
-# Python generated files
-__pycache__/
-*.py[cod]
-.venv/
-.pytest_cache/
-
-# Extracted executable and library samples
-*.exe
-*.dll
-
-# Temporary and backup files
-*.bak
-*.premerge.bak
-*~
-*.swp
-
-# Raw stream exports: keep local, publish only reviewed excerpts
-/evidence/stream*.txt
-/evidence/*_full.txt
-
-# Empty or undocumented local placeholder
-/evidence/modandcrackedapk_http.tsv
-
-# Local Zeek re-run output, backups and root-level Zeek logs
-/*.log
-zeek/baseline_*/
-*.backup_*
-*.pre_finalize_backup
-
-# Beaconing simulation outputs: Zeek re-runs, intermediate attempts, HTML reports
-zeek/s02_modeA*/
-s02_modeA_v2_loopback/
-
-# RITA config backups and working copies (local experimentation only)
-rita/*.bak*
-rita/*.backup_*
-evidence/webinvestigation/
-
-# Additional generated analysis artifacts (2026-11-04)
-# Keep raw captures, generated protocol logs, and detector output local.
+# PCAP inputs and generated analysis output
 *.pcap
 *.pcapng
+pcaps/
+analysis/
+artifacts/
+qa-data/
 zeek/**/conn.log
 zeek/**/dns.log
 zeek/**/http.log
 zeek/**/ssl.log
 zeek/**/files.log
-zeek/**/packet_filter.log
-zeek/**/weird.log
-suricata/
+zeek/baseline_*/notice.log
+suricata/**/eve.json
+suricata/**/fast.log
+suricata/**/stats.log
+suricata/**/suricata.log
 **/suricata/eve.json
 **/suricata/fast.log
 **/suricata/stats.log
 **/suricata/suricata.log
 **/suricata_homenet/
-**/__pycache__/
-*.py[cod]
 
-# Local review backups and temporary files
-*.pre_*
-*.bak
-*.bak_*
-*.backup
-*.backup_*
-*.pre_finalize_*
+# Private/raw evidence exports and local web investigation output
+/evidence/stream*.txt
+/evidence/*_full.txt
+/evidence/modandcrackedapk_http.tsv
+/evidence/webinvestigation/
 
-# Nested generated tool outputs
-**/conn.log
-**/dns.log
-**/http.log
-**/ssl.log
-**/files.log
-**/packet_filter.log
-**/weird.log
-**/eve.json
-**/fast.log
-**/stats.log
-**/suricata.log
+# Generated protocol, capture, simulation, and analysis logs
+/*.log
+zeek/**/packet_filter.log
+zeek/**/weird.log
 **/run.out
 **/tcpdump.err
 **/rita_import.out
-
-# Simulation runtime artifacts
 **/client.log
 **/server.log
 **/server_keepalive.log
 **/nmap.out
 **/phases.log
-**/www/
+
+# Local Zeek reruns and generated simulation web output
+zeek/s02_modeA*/
+s02_modeA_v2_loopback/
+simulations/**/www/
+
+# Local binaries and backups
+*.exe
+*.dll
+*.bak
+*.backup
+*.pre_*
+*.bak_*
+*.backup_*
+*.pre_finalize_*
+*.swp
+*~
+
+# Flutter generated files
+/frontend/.metadata
+/frontend/.dart_tool/
+/frontend/build/
+/frontend/.pub-cache/

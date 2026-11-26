@@ -30,7 +30,7 @@ def parse_value(value):
         return value
 
 
-def read_zeek_tsv(path):
+def read_zeek_tsv(path, include_line_numbers=False):
     """Read Zeek TSV using its #fields metadata, tolerating malformed rows."""
     path = Path(path)
     if not path.is_file() or path.stat().st_size == 0:
@@ -39,7 +39,7 @@ def read_zeek_tsv(path):
     fields = []
     rows = []
     with path.open("r", encoding="utf-8", errors="replace") as handle:
-        for raw_line in handle:
+        for line_number, raw_line in enumerate(handle, 1):
             line = raw_line.rstrip("\r\n")
             if not line:
                 continue
@@ -51,7 +51,10 @@ def read_zeek_tsv(path):
             values = line.split("\t")
             if len(values) != len(fields):
                 continue
-            rows.append({key: parse_value(value) for key, value in zip(fields, values)})
+            row = {key: parse_value(value) for key, value in zip(fields, values)}
+            if include_line_numbers:
+                row["_line_number"] = line_number
+            rows.append(row)
     return rows
 
 

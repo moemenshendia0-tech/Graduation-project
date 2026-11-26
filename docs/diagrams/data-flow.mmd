@@ -1,0 +1,26 @@
+flowchart TD
+  subgraph existing["Existing network detection output — verified read-only in this QA"]
+    logs["Saved Zeek / Suricata / ProjectDetector records"] --> unified["Unified alerts.json<br/>137 records"]
+    unified --> alertsAPI["FastAPI alerts and stats routes"]
+    alertsAPI --> dashboard["Dashboard queue, filters, inspector,<br/>evidence, pagination, CSV"]
+  end
+
+  subgraph local["Local Malware Intelligence workflow"]
+    sample["Explicit local file path"] --> static["Static byte parser<br/>PE / ELF / strings, bounded"]
+    static --> record["Versioned analysis record<br/>observed or synthetic classification"]
+    record --> validate["JSON Schema + Pydantic validation"]
+    validate --> store["Configured local JSON store"]
+    store --> intelligenceUI["Analysis list and detail UI"]
+  end
+
+  subgraph optional["Optional intelligence and telemetry"]
+    hash["Already-observed valid file hash"] --> lookup["MalwareBazaar metadata-only lookup"]
+    lookup --> provider["Provider metadata with provenance"]
+    events["Zeek / Suricata / sandbox telemetry"] --> normalize["Normalize with source-record evidence references"]
+    normalize --> correlate["Correlate only by implemented identifiers / DNS destination match"]
+    alertrefs["Unified alert identifiers and evidence references"] --> correlate
+    correlate --> findings["Related findings with non-causality limitation"]
+  end
+
+  provider --> intelligenceUI
+  findings --> intelligenceUI

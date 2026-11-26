@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/schemas/project-iocs-v1.schema.json",
+  "title": "Attributed Local Network Indicator Set",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "provider", "source_reference", "retrieved_at_utc", "indicators"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "provider": {"type": "string", "minLength": 1},
+    "source_reference": {"type": "string", "format": "uri"},
+    "retrieved_at_utc": {"type": "string", "format": "date-time"},
+    "indicators": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["type", "value"],
+        "properties": {
+          "type": {"enum": ["ip", "domain", "url", "md5", "sha1", "sha256"]},
+          "value": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}

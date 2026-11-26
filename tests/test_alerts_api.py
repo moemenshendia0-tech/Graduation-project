@@ -113,3 +113,19 @@ def test_unreadable_path_is_handled_as_unavailable(tmp_path, monkeypatch):
     response = TestClient(app).get("/api/stats")
     assert response.status_code == 503
     assert response.json()["error"]["code"] == "alerts_file_unavailable"
+
+
+def test_alerts_file_system_paths_are_not_exposed(tmp_path, monkeypatch):
+    private_path = tmp_path / "private" / "alerts.json"
+    monkeypatch.setenv("UNIFIED_ALERTS_PATH", str(private_path))
+    client = TestClient(app)
+
+    health = client.get("/health")
+    assert health.status_code == 200
+    assert health.json()["error"]["message"] == "Alerts file is unavailable"
+    assert str(tmp_path) not in health.text
+
+    alerts = client.get("/api/alerts")
+    assert alerts.status_code == 503
+    assert alerts.json()["error"]["message"] == "Alerts file is unavailable"
+    assert str(tmp_path) not in alerts.text

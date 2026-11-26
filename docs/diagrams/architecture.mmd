@@ -1,0 +1,19 @@
+flowchart LR
+  analyst["SOC analyst browser"]
+  flutter["Flutter Web SOC workspace"]
+  api["FastAPI local MVP<br/>127.0.0.1 only"]
+  bundle[("Unified alerts JSON<br/>read-only input")]
+  store[("Malware analysis JSON<br/>schema-validated store")]
+  cli["Offline static analysis CLI"]
+  file["Local file bytes<br/>read-only, size-limited"]
+  mb["MalwareBazaar metadata API<br/>optional hash lookup"]
+  key["Auth-Key from protected<br/>backend environment"]
+
+  analyst --> flutter
+  flutter -->|"HTTP / JSON<br/>API_BASE_URL"| api
+  api -->|"read"| bundle
+  api -->|"read/write atomic JSON"| store
+  file --> cli
+  cli -->|"parse bytes; validate schema; persist"| store
+  api -->|"hash metadata only, when configured"| mb
+  key --> mb
