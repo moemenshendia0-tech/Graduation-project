@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/schemas/pcap-intelligence-v1.schema.json",
+  "title": "PCAP Network Intelligence Record",
+  "description": "Normalized, provenance-preserving observations from offline PCAP analysis. Alerts and labels are not proof of compromise.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "record_id", "provenance", "capture", "analysis_tools", "observations", "indicators", "file_hash_observations", "malwarebazaar_enrichments", "assessment"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "record_id": {"type": "string", "minLength": 1},
+    "provenance": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source_kind", "source_reference", "publisher", "publisher_label", "acquired_at_utc", "license_status"],
+      "properties": {
+        "source_kind": {"enum": ["local", "publisher", "researcher_generated", "unknown"]},
+        "source_reference": {"type": ["string", "null"]}, "publisher": {"type": ["string", "null"]},
+        "publisher_label": {"type": ["string", "null"]}, "acquired_at_utc": {"type": ["string", "null"], "format": "date-time"},
+        "license_status": {"enum": ["verified", "unclear", "not_applicable", "unknown"]},
+        "license_reference": {"type": ["string", "null"]}, "source_verification": {"enum": ["cryptographically_verified", "documented_only", "unverified", "unknown"]}
+      }
+    },
+    "capture": {
+      "type": "object", "additionalProperties": false,
+      "required": ["pcap_sha256", "size_bytes", "format", "link_type", "snaplen", "packet_count", "first_packet_utc", "last_packet_utc"],
+      "properties": {
+        "pcap_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "size_bytes": {"type": "integer", "minimum": 24},
+        "format": {"const": "pcap"}, "link_type": {"type": "integer", "minimum": 0}, "snaplen": {"type": "integer", "minimum": 1},
+        "packet_count": {"type": "integer", "minimum": 0}, "first_packet_utc": {"type": ["string", "null"], "format": "date-time"},
+        "last_packet_utc": {"type": ["string", "null"], "format": "date-time"}
+      }
+    },
+    "analysis_tools": {"type": "array", "items": {"$ref": "#/$defs/tool"}},
+    "observations": {"type": "array", "items": {"$ref": "#/$defs/observation"}},
+    "indicators": {"type": "array", "items": {"$ref": "#/$defs/indicator"}},
+    "file_hash_observations": {"type": "array", "items": {"$ref": "#/$defs/fileHash"}},
+    "malwarebazaar_enrichments": {"type": "array", "items": {"$ref": "#/$defs/enrichment"}},
+    "assessment": {
+      "type": "object", "additionalProperties": false,
+      "required": ["confidence", "limitations", "analyst_hypotheses"],
+      "properties": {"confidence": {"enum": ["low", "medium", "high", "not_assessed"]}, "limitations": {"type": "array", "items": {"type": "string"}}, "analyst_hypotheses": {"type": "array", "items": {"$ref": "#/$defs/hypothesis"}}}
+    }
+  },
+  "$defs": {
+    "tool": {"type": "object", "additionalProperties": false, "required": ["name", "version", "role", "configuration_sha256"], "properties": {"name": {"type": "string", "minLength": 1}, "version": {"type": ["string", "null"]}, "role": {"type": "string", "minLength": 1}, "configuration_sha256": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"}}},
+    "observation": {"type": "object", "additionalProperties": false, "required": ["classification", "source", "kind", "observed_at_utc", "evidence_ref", "data"], "properties": {"classification": {"enum": ["observed_fact", "tool_alert", "publisher_label", "external_intelligence"]}, "source": {"type": "string", "minLength": 1}, "kind": {"type": "string", "minLength": 1}, "observed_at_utc": {"type": ["string", "null"], "format": "date-time"}, "evidence_ref": {"type": "string", "minLength": 1}, "data": {"type": "object"}}},
+    "indicator": {"type": "object", "additionalProperties": false, "required": ["type", "value", "direction", "protocol", "port", "first_seen_utc", "last_seen_utc", "evidence_refs"], "properties": {"type": {"enum": ["ip", "domain", "url", "port", "protocol"]}, "value": {"type": ["string", "integer"], "minLength": 1}, "direction": {"enum": ["source", "destination", "both", "unknown"]}, "protocol": {"type": ["string", "null"]}, "port": {"type": ["integer", "null"], "minimum": 0, "maximum": 65535}, "first_seen_utc": {"type": ["string", "null"], "format": "date-time"}, "last_seen_utc": {"type": ["string", "null"], "format": "date-time"}, "evidence_refs": {"type": "array", "items": {"type": "string"}}}},
+    "fileHash": {"type": "object", "additionalProperties": false, "required": ["algorithm", "value", "source", "evidence_ref"], "properties": {"algorithm": {"enum": ["md5", "sha1", "sha256"]}, "value": {"type": "string", "pattern": "^(?:[a-fA-F0-9]{32}|[a-fA-F0-9]{40}|[a-fA-F0-9]{64})$"}, "source": {"type": "string", "minLength": 1}, "evidence_ref": {"type": "string", "minLength": 1}}, "allOf": [{"if": {"properties": {"algorithm": {"const": "md5"}}}, "then": {"properties": {"value": {"pattern": "^[a-fA-F0-9]{32}$"}}}}, {"if": {"properties": {"algorithm": {"const": "sha1"}}}, "then": {"properties": {"value": {"pattern": "^[a-fA-F0-9]{40}$"}}}}, {"if": {"properties": {"algorithm": {"const": "sha256"}}}, "then": {"properties": {"value": {"pattern": "^[a-fA-F0-9]{64}$"}}}}]},
+    "enrichment": {"type": "object", "additionalProperties": false, "required": ["provider", "queried_hash", "queried_algorithm", "match_status", "lookup_time_utc", "source_reference", "metadata"], "properties": {"provider": {"const": "MalwareBazaar"}, "queried_hash": {"type": "string", "pattern": "^[a-fA-F0-9]{64}$"}, "queried_algorithm": {"const": "sha256"}, "match_status": {"enum": ["found", "not_found"]}, "lookup_time_utc": {"type": "string", "format": "date-time"}, "source_reference": {"type": "string", "format": "uri"}, "metadata": {"type": "object"}}},
+    "hypothesis": {"type": "object", "additionalProperties": false, "required": ["statement", "confidence", "evidence_refs"], "properties": {"statement": {"type": "string", "minLength": 1}, "confidence": {"enum": ["low", "medium", "high"]}, "evidence_refs": {"type": "array", "items": {"type": "string"}}}}
+  }
+}

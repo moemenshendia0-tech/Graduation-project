@@ -4,12 +4,18 @@ class DashboardStats {
     required this.severityCounts,
     required this.sourceCounts,
     required this.ruleCounts,
+    required this.totalAlertsAvailable,
+    required this.severityCountsAvailable,
+    required this.sourceCountsAvailable,
   });
 
   final int totalAlerts;
   final Map<String, int> severityCounts;
   final Map<String, int> sourceCounts;
   final Map<String, int> ruleCounts;
+  final bool totalAlertsAvailable;
+  final bool severityCountsAvailable;
+  final bool sourceCountsAvailable;
 
   factory DashboardStats.fromJson(Map<String, dynamic> envelope) {
     final raw = envelope['stats'];
@@ -21,6 +27,9 @@ class DashboardStats {
       severityCounts: _countMap(raw['severity_counts']),
       sourceCounts: _countMap(raw['source_counts']),
       ruleCounts: _countMap(raw['rule_counts']),
+      totalAlertsAvailable: raw['total_alerts'] is num,
+      severityCountsAvailable: raw['severity_counts'] is Map,
+      sourceCountsAvailable: raw['source_counts'] is Map,
     );
   }
 

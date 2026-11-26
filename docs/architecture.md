@@ -1,58 +1,28 @@
 # Project Architecture
 
-## Network Traffic Analysis & C2/Exfiltration Detection
-
-The unified alert path runs Zeek and Suricata independently against the same offline PCAP. RITA can analyze Zeek logs separately. The alert merge preserves source identity and candidate records; it does not deduplicate or correlate events across sensors.
+## Implemented offline path
 
 ```text
-                         PCAP
-              ┌──────────┼──────────┐
-              ▼          ▼          ▼
-       Wireshark/      Zeek      Suricata
-        TShark          │           │
-                        ▼           ▼
-                 Zeek adapter   EVE adapter
-                        └─────┬─────┘
-                              ▼
-                    Candidate-alert merge
-                              ▼
-                       FastAPI → Flutter
+Authorized PCAP (read-only)
+       ├── Zeek ──> Zeek adapter ─────┐
+       ├── Suricata ─> EVE adapter ────┼─> unified alert JSON ─> FastAPI ─> Flutter Web
+       └── capture metadata builder    │
+                                       └─> ProjectDetector evidence-linked findings
 
-              RITA ← Zeek logs (separate analysis)
-              Analyst review → IOCs → report
+Local file ─> bounded static-analysis CLI ─> schema-validated local JSON store ─> API/UI
+MalwareBazaar hash metadata lookup ─────────────────────────────────────────────> API/UI
 ```
 
-## Laboratory Environment
+The pipeline reuses the project's Zeek/Suricata adapters and merge code. The PCAP intelligence builder wraps that pipeline to capture provenance, metadata, and normalized observations; it does not create a second alert engine. ProjectDetector findings are distinct from native engine alerts.
 
-The project will use an isolated virtual laboratory:
+## Evidence and trust boundaries
 
-```text
-                 Isolated Lab Network
-                         │
-          ┌──────────────┼──────────────┐
-          │              │              │
-          ▼              ▼              ▼
-      Kali Linux     Windows 10      Ubuntu
-          │              │              │
-          └──────────────┼──────────────┘
-                         │
-                         ▼
-                  Network Traffic
-                         │
-                         ▼
-             Analysis & Detection Pipeline
-```
+- Captures are read-only inputs. The pipeline runs offline and the builder does not extract payloads or transferred files.
+- Each record retains its source and evidence reference when available. Capture provenance and publisher labels are recorded separately from observed facts and analyst assessments.
+- Engine alerts are rule/tool observations. A publisher scenario label or provider hash match does not prove compromise, execution, C2, or exfiltration.
+- The FastAPI MVP serves operator-configured JSON paths and has no authentication. Bind only to loopback.
+- The Flutter app uses compile-time `API_BASE_URL`; it does not receive provider credentials.
+- Local static metadata parsing is CLI-based. No API upload/job route, live sandbox, curated YARA rules integration, ssdeep, or signature verification is implemented.
+- Telemetry can be displayed/imported where available. Correlation is limited to implemented evidence identifiers; time proximity alone does not establish causality.
 
-## Analysis Flow
-
-1. Obtain a PCAP or generate controlled network traffic.
-2. Analyze packets using Wireshark/TShark.
-3. Process the traffic with Zeek.
-4. Analyze Zeek logs.
-5. Process traffic with Suricata.
-6. Analyze IDS alerts.
-7. Use RITA for beaconing analysis.
-8. Compare findings from all tools and correlate only when shared evidence supports the link.
-9. Extract IOCs.
-10. Map relevant behavior to MITRE ATT&CK.
-11. Produce the final investigation report.
+The isolated malware lab document is design-only. No malware execution environment is part of the shipped workflow. See the Mermaid diagrams in `docs/diagrams/`.

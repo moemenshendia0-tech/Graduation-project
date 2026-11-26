@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:network_traffic_dashboard/models/alert.dart';
 import 'package:network_traffic_dashboard/models/alerts_page.dart';
 import 'package:network_traffic_dashboard/models/dashboard_stats.dart';
+import 'package:network_traffic_dashboard/models/malware_analysis.dart';
 
 void main() {
   test('Alert parses the unified schema and preserves evidence as a string', () {
@@ -24,6 +25,12 @@ void main() {
       'related_uid': '',
       'evidence': evidence,
       'source_tool': 'Suricata',
+      'alert_origin': 'engine_alert',
+      'detection_engine': 'suricata-eve-adapter',
+      'evidence_refs': ['suricata/eve.json#line=12'],
+      'related_events': [
+        {'uid': 'C1', 'evidence_ref': 'zeek/conn.log#uid=C1'},
+      ],
     });
 
     expect(alert.alertId, 'alert-000001');
@@ -32,6 +39,10 @@ void main() {
     expect(alert.parsedTimestamp, isNotNull);
     expect(alert.severity, 'medium');
     expect(alert.confidence, 'high');
+    expect(alert.alertOrigin, 'engine_alert');
+    expect(alert.detectionEngine, 'suricata-eve-adapter');
+    expect(alert.evidenceRefs, ['suricata/eve.json#line=12']);
+    expect(alert.relatedEvents.single['uid'], 'C1');
     expect(alert.ruleName, 'HTTP signature');
     expect(alert.protocol, 'TCP');
     expect(alert.category, 'Potentially Bad Traffic');
@@ -39,8 +50,8 @@ void main() {
     expect(alert.matchesSearch('hTtP sIgNaTuRe'), isTrue);
     expect(alert.matchesSearch('10.11.26.183'), isTrue);
     expect(alert.matchesSearch('example.test'), isTrue);
-    expect(alert.matchesSearch('flow_id'), isFalse);
-    expect(alert.matchesSearch('8899'), isFalse);
+    expect(alert.matchesSearch('flow_id'), isTrue);
+    expect(alert.matchesSearch('8899'), isTrue);
   });
 
   test('AlertsPage parses the list envelope and pagination', () {
@@ -74,6 +85,14 @@ void main() {
     expect(page.alerts.single.matchesSearch('wpad.example.test'), isFalse);
   });
 
+  test('DashboardStats marks missing metric maps as unavailable', () {
+    final stats = DashboardStats.fromJson({
+      'stats': {'total_alerts': 3},
+    });
+    expect(stats.totalAlertsAvailable, isTrue);
+    expect(stats.severityCountsAvailable, isFalse);
+    expect(stats.sourceCountsAvailable, isFalse);
+  });
   test('DashboardStats parses real summary count maps', () {
     final stats = DashboardStats.fromJson({
       'stats': {
@@ -90,4 +109,46 @@ void main() {
     expect(stats.sourceCounts['Suricata'], 127);
     expect(stats.ruleCounts['NET-005'], 2);
   });
+
+  test(
+    'MalwareAnalysis and telemetry preserve classification and evidence',
+    () {
+      final analysis = MalwareAnalysis.fromJson({
+        'analysis_id': 'fixture-case',
+        'analysis_status': 'static_complete',
+        'sample': {
+          'sha256': List.filled(64, 'a').join(),
+          'hash_status': 'verified',
+          'original_file_name': 'fixture.exe',
+          'size_bytes': 4,
+          'detected_type': 'PE candidate',
+        },
+        'provenance': {'evidence_classification': 'synthetic_fixture'},
+        'static_analysis': {
+          'status': 'complete',
+          'results': {
+            'pe': {'format': 'PE32'},
+          },
+        },
+        'dynamic_analysis': null,
+        'observations': {'telemetry_events': []},
+        'related_detection_findings': [],
+        'assessment': {
+          'limitations': ['Not executed'],
+        },
+      });
+      expect(analysis.sha256, List.filled(64, 'a').join());
+      expect(analysis.classification, 'synthetic_fixture');
+      expect(analysis.limitations, ['Not executed']);
+      final event = MalwareEvent.fromJson({
+        'event_type': 'network_connection',
+        'source_tool': 'Sandbox',
+        'classification': 'synthetic_fixture',
+        'data': {'dst_port': 443},
+        'evidence_refs': ['sandbox/events.json#record=1'],
+      });
+      expect(event.data['dst_port'], 443);
+      expect(event.evidenceRefs, ['sandbox/events.json#record=1']);
+    },
+  );
 }

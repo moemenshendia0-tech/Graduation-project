@@ -1,0 +1,5 @@
+# Safety snippet only; this is not a complete Suricata configuration.
+# Merge into a reviewed local configuration and verify every file-store stanza.
+outputs:
+  - file-store:
+      enabled: no

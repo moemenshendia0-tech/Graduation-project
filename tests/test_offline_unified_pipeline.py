@@ -21,7 +21,7 @@ class OfflinePipelineTests(unittest.TestCase):
         self.rules.write_text("rules", encoding="utf-8")
         self.output = self.root / "run"
 
-    def mock_commands(self, command, cwd=None):
+    def mock_commands(self, command, cwd=None, timeout_seconds=pipeline.DEFAULT_COMMAND_TIMEOUT_SECONDS):
         command = [str(value) for value in command]
         if command[0] == "/fake/zeek" and "--version" in command:
             return "zeek version 8.test"
@@ -54,6 +54,14 @@ class OfflinePipelineTests(unittest.TestCase):
             }), encoding="utf-8")
             (out / "alerts.csv").write_text("rule_id\n", encoding="utf-8")
             return ""
+        if "detect_project_findings.py" in command[1]:
+            out = Path(command[command.index("--out") + 1])
+            out.mkdir()
+            (out / "findings.json").write_text(json.dumps({
+                "tool": "project-network-findings", "alert_origin": "project_generated",
+                "alert_count": 0, "alerts": [],
+            }), encoding="utf-8")
+            return ""
         if "merge_detection_alerts.py" in command[1]:
             out = Path(command[command.index("--out") + 1])
             out.mkdir()
@@ -76,9 +84,9 @@ class OfflinePipelineTests(unittest.TestCase):
         self.assertEqual(saved["tools"]["zeek"], "zeek version 8.test")
         self.assertIn("started_at_utc", saved)
         self.assertIn("finished_at_utc", saved)
-        self.assertEqual(saved["alert_counts"], {"zeek": 0, "suricata": 0, "unified": 0})
+        self.assertEqual(saved["alert_counts"], {"zeek": 0, "suricata": 0, "unified": 0, "project_findings": 0})
         for key in ("zeek_alerts_json", "zeek_alerts_csv", "suricata_alerts_json",
-                    "suricata_alerts_csv", "unified_json", "unified_csv"):
+                    "suricata_alerts_csv", "unified_json", "unified_csv", "project_findings_json"):
             artifact = saved["artifacts"][key]
             artifact_path = Path(artifact["path"])
             self.assertEqual(artifact["sha256"], hashlib.sha256(artifact_path.read_bytes()).hexdigest())
@@ -87,7 +95,7 @@ class OfflinePipelineTests(unittest.TestCase):
         self.assertTrue((self.output / "unified/alerts.csv").is_file())
 
     def test_failed_engine_run_records_failure_manifest_and_stops_pipeline(self):
-        def fail_zeek(command, cwd=None):
+        def fail_zeek(command, cwd=None, timeout_seconds=pipeline.DEFAULT_COMMAND_TIMEOUT_SECONDS):
             if command[0] == "/fake/zeek" and "--version" in command:
                 return "zeek version 8.test"
             if command[0] == "/fake/suricata" and "--build-info" in command:
@@ -113,6 +121,23 @@ class OfflinePipelineTests(unittest.TestCase):
                 pipeline.run_pipeline(self.pcap, self.output, suricata_config=self.config,
                                      suricata_rules=self.rules)
         self.assertEqual(marker.read_text(encoding="utf-8"), "preserve")
+
+    def test_command_timeout_is_bounded_and_does_not_leak_paths(self):
+        from subprocess import TimeoutExpired
+
+        with patch.object(pipeline.subprocess, "run",
+                          side_effect=TimeoutExpired(cmd="/private/path/zeek", timeout=3)) as run:
+            with self.assertRaisesRegex(RuntimeError, "timed out after 3 seconds: zeek") as raised:
+                pipeline.run(["/private/path/zeek", "-r", "private.pcap"], timeout_seconds=3)
+        self.assertNotIn("private", str(raised.exception))
+        self.assertEqual(run.call_args.kwargs["timeout"], 3)
+
+    def test_zero_command_timeout_is_rejected(self):
+        with patch.object(pipeline.shutil, "which", side_effect=lambda name: f"/fake/{name}"):
+            with self.assertRaisesRegex(ValueError, "positive number"):
+                pipeline.run_pipeline(self.pcap, self.output, suricata_config=self.config,
+                                      suricata_rules=self.rules, command_timeout_seconds=0)
+        self.assertFalse(self.output.exists())
 
     def test_missing_zeek_is_reported_before_output_creation(self):
         with patch.object(pipeline.shutil, "which", side_effect=lambda name: None if name == "zeek" else "/fake/suricata"):

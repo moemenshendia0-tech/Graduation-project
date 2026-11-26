@@ -1,301 +1,86 @@
-# Network Traffic Analysis & C2/Exfiltration Detection
+# Network Traffic Analysis & SOC Dashboard
 
-## Project Overview
+This project processes authorized PCAPs offline with Zeek and Suricata, combines their adapter alerts with evidence-linked ProjectDetector findings, serves the resulting JSON through a local FastAPI service, and displays historical analysis in a Flutter Web dashboard. It is not live monitoring.
 
-This project focuses on analyzing network traffic and detecting suspicious activities such as network scanning, Command and Control (C2) communication, beaconing, DNS tunneling, and potential data exfiltration.
+## Capabilities and boundaries
 
-The project combines multiple network security tools into a practical traffic analysis and detection pipeline.
+- Offline PCAP pipeline: Zeek + Suricata, existing adapters, ProjectDetector NET-001–NET-012, unified alert output, provenance manifest.
+- PCAP intelligence builder: capture metadata/provenance and normalized observations that reuse the existing pipeline. No payload extraction and no file execution.
+- FastAPI: alert list/details/stats and local Malware Intelligence metadata/telemetry routes. Bind to loopback; the MVP has no authentication.
+- Flutter Web: dashboard, filters, sorting, pagination, details/evidence, Malware Intelligence view, CSV export.
+- MalwareBazaar: metadata-only integration. A backend key is required for live lookups; credentialed lookup was not verified for the final QA run.
+- Static analysis: offline local-file CLI with bounded metadata parsing. No upload endpoint or asynchronous UI analysis job.
 
-## Project Objectives
+The final QA source used Flutter 3.50.1 / Dart 3.14.0, Python 3.14.4, Zeek 8.0.10, and Suricata 8.0.3. TShark/capinfos 4.6.4 were available for inspection; they are not runtime dependencies of the pipeline. Install OS tools and Suricata rules/configuration separately. Other versions may require validation.
 
-* Analyze network traffic and PCAP files.
-* Identify suspicious network activity.
-* Extract Indicators of Compromise (IOCs).
-* Detect suspicious C2 communication.
-* Identify beaconing behavior.
-* Analyze suspicious DNS activity and DNS tunneling.
-* Detect potential data exfiltration.
-* Correlate results from multiple security tools.
-* Map identified behaviors to MITRE ATT&CK.
-* Produce investigation reports based on network evidence.
+A historical reference bundle and a fresh baseline-PCAP run each contained 137 alerts in QA, but they are separate artifacts. Neither dataset nor generated output is included here. For the fresh run, QA recorded 127 Suricata alerts, 2 Zeek alerts, and 8 ProjectDetector findings (NET-005 ×2, NET-007 ×7, NET-009 ×1). These findings are observations requiring review, not proof of compromise, C2, or exfiltration.
 
-## Tools
+## Clean environment setup
 
-* Wireshark
-* TShark
-* Zeek
-* Suricata
-* Emerging Threats Open Ruleset
-* RITA
-* VirtualBox
-* Kali Linux
-* Windows 10
-* Ubuntu
-
-## Project Workflow
-
-```text
-                      PCAP
-             ┌─────────┼─────────┐
-             ▼         ▼         ▼
-      Wireshark/      Zeek    Suricata
-       TShark          │         │
-                       ▼         ▼
-                 Zeek adapter  EVE adapter
-                       └────┬────┘
-                            ▼
-                 Source-aware alert merge
-                            │
-                    FastAPI → Flutter
-
-       RITA may analyze Zeek logs separately.
-       Analyst review → IOCs → report
-```
-
-Zeek and Suricata process the same PCAP independently. The unified output combines and labels candidate alerts; it does not deduplicate or correlate events across sensors. RITA is a separate analysis path.
-
-## Team Structure
-
-| Member   | Role                             |
-| -------- | -------------------------------- |
-| Member 1 | Team Leader / Integration        |
-| Member 2 | Network Traffic Analyst          |
-| Member 3 | Network Detection Analyst        |
-| Member 4 | C2 & Beaconing Analyst           |
-| Member 5 | Attack Simulation & Lab Engineer |
-
-## Main Scenarios
-
-### 1. Network Scanning
-
-Analyze scanning activity generated inside the isolated lab environment.
-
-### 2. C2 Communication
-
-Analyze controlled Command and Control communication and identify suspicious network patterns.
-
-### 3. Beaconing
-
-Detect periodic communication between a host and a potential C2 destination.
-
-### 4. DNS Tunneling
-
-Analyze suspicious DNS activity and identify potential DNS tunneling behavior.
-
-### 5. Data Exfiltration
-
-Analyze controlled outbound data transfers and identify suspicious exfiltration patterns.
-
-## Investigation Process
-
-Each scenario will follow the same general process:
-
-```text
-Traffic / PCAP
-      ├── Wireshark / TShark review
-      ├── Zeek logs ──┬── offline detector ──┐
-      │               └── optional RITA      │
-      └── Suricata EVE ── EVE adapter ──────┤
-                                             ▼
-                                  Candidate-alert merge
-                                             ▼
-                               Evidence-based analyst review
-                                             ▼
-                              IOCs / ATT&CK / report
-```
-
-## Repository Structure
-
-```text
-Network-Traffic-Analysis-C2-Exfil/
-│
-├── README.md
-├── scripts/
-├── tests/
-│
-├── docs/
-├── pcaps/
-├── wireshark/
-├── zeek/
-├── suricata/
-├── rita/
-├── simulations/
-├── reports/
-└── evidence/
-```
-
-## Project Scope
-
-All attack simulations and testing activities will be performed inside an isolated laboratory environment for educational and defensive security analysis purposes.
-
-## Project Status
-
-**Core implementation and integration are complete.** The offline Zeek/Suricata pipeline, read-only FastAPI service, and Flutter Web dashboard are present. Flutter analysis passed with no issues, all 12 Flutter tests passed, the Web release build succeeded from a native Windows filesystem, and browser integration checks passed against the FastAPI backend and the 129-alert validation dataset. Final evidence review and publication checks remain outstanding.
-
-On 21 November 2026, the offline pipeline processed the local, Git-ignored `pcaps/baseline.pcap` (SHA-256 `a38267943a7bf3b0e445d7e51cb0a68b3dee797d67081bc9a033f73d079c0f50`) with Zeek 8.0.10 and Suricata 8.0.3 and generated 129 candidate alerts: 2 from Zeek and 127 from Suricata. The run manifest and generated output are local under `analysis/final-demo-run-20261121-v3/`; this is a reproducible validation run, not a checked-in dataset. The manifest includes SHA-256 and byte size for adapter and unified JSON/CSV artifacts. These alerts are combined, not deduplicated or cross-sensor correlated, and do not establish compromise.
-
-Current tasks:
-
-* [x] Create GitHub repository
-* [x] Assign team responsibilities
-* [x] Define project workflow
-* [x] Configure the core analysis environment; MongoDB is now operational for baseline RITA analysis, while some optional tools remain unavailable.
-* [x] Analyze first PCAP
-* [x] Configure and run Zeek; preserve the reviewed logs
-* [x] Configure and run Suricata; preserve the reviewed EVE/alert output
-* [x] Configure and run RITA 4.8.2; import fresh Zeek logs into `soc_baseline_zeek810_20261027`
-* [x] Run the local lab simulation and a partial beacon simulation; extended validation remains pending.
-* [x] Validate detector output on the two reviewed captures (broader multi-tool and endpoint correlation remains pending)
-* [x] Validate the unified offline pipeline, FastAPI endpoints, Flutter static analysis, Flutter widget tests, Web release build, and browser integration (see `reports/FINALIZATION_REPORT.md`).
-* [ ] Complete final evidence review and publication checks.
-
----
-
-## Completed Investigation: Suspicious NetSupport-like Traffic
-
-A PCAP dated 26 November 2024 was investigated using Wireshark/TShark, Zeek, and Suricata artifacts. RITA 4.8.2 is available at `$HOME/tools/rita-v4.8.2/rita`, and a fresh Zeek dataset was imported. Further RITA interpretation and endpoint correlation remain pending; the import alone does not establish compromise.
-
-### Key Findings
-
-- Internal host: `10.11.26.183`
-- External destination: `194.180.191.64:443`
-- HTTP URI: `/fakeurl.htm`
-- Observed User-Agent: `NetSupport Manager/1.3`
-- Zeek identified 58 HTTP POST requests over approximately 52.73 minutes.
-- 51 of 57 request intervals fell between 50 and 70 seconds.
-- Suricata generated NetSupport remote-administration and HTTP POST alerts.
-- Additional TLS connections were observed for `modandcrackedapk.com`
-  and `classicgrand.com`.
-
-### Assessment
-
-The repeated NetSupport-like traffic is suspicious and warrants further
-investigation. The PCAP alone does not confirm malware infection,
-unauthorized remote access, a confirmed C2 channel, or data exfiltration.
-
-### Investigation Artifacts
-
-- `reports/incident_report.md` — full investigation report
-- `reports/detection_summary.txt` — detection summary
-- `reports/timeline_finding.txt` — timeline correlation and assessment
-- `evidence/ioc_table.tsv` — indicators of compromise under investigation
-- `evidence/netsupport_http_timeline.tsv` — HTTP request timeline
-- `evidence/netsupport_suricata_alerts.tsv` — relevant Suricata alerts
-- `evidence/netsupport_timing_finding.txt` — periodicity analysis
-
-> Raw packet captures and generated raw logs are excluded from version control.
-
-## Evidence Inventory
-
-- `reports/evidence_inventory.md` — duplicate-artifact inventory and handling notes.
-
-## Additional Investigation: runner_ilove.exe
-
-A separate investigation examined an HTTP transfer of a Windows executable
-observed in the `2026-10-01-traffic-analysis-exercise.pcap` capture.
-
-- Source host: `10.10.1.128`
-- Download server: `107.175.82.242:9000`
-- Requested path: `/wilow/runner_ilove.exe`
-- HTTP status: `200 OK`
-- Captured response body: `1,646,592` bytes
-- SHA-256: `b789adce70c028a6d17be45ec34667aa95586350ee0c4057e75b138b1ad35061`
-- Threat-intelligence correlation: a matching ThreatFox hash record is documented
-  in the dedicated report.
-- A later connection to `195.63.128.106:443` requires further investigation;
-  the capture alone does not establish that the downloaded file initiated it.
-
-The evidence supports treating the sample as potentially malicious for
-defensive handling. Execution, host compromise, causal command-and-control
-activity, and data exfiltration have not been established by the available
-packet evidence.
-
-Detailed documentation:
-- `reports/incident_runner_ilove.md` — investigation report
-- `reports/runner_ilove_iocs.csv` — investigation indicators
-- `reports/runner_ilove_evidence_checklist.md` — evidence review checklist
-
-The extracted executable and local batch-analysis output are excluded from
-Git. Do not execute the sample on a normal workstation.
-
-
-## Local Detector Utilities
-
-The Python scripts operate on existing Zeek TSV logs and write derived output under the ignored local `analysis/` directory. Keep original PCAPs, extracted executables, and raw stream exports out of public Git history.
-
-Run syntax and regression checks:
+Python 3.11+ is recommended; install test and API dependencies in a virtual environment:
 
 ```bash
-python3 -m py_compile scripts/detect_network_anomalies.py scripts/analyze_post_patterns.py scripts/build_incident_report.py
-python3 -m unittest discover -s tests -v
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install -r requirements-dev.lock.txt
 ```
 
-Example: process the available August capture's existing Zeek logs:
+Run the test suite from the repository root:
 
 ```bash
-python3 scripts/detect_network_anomalies.py \
-  --logs analysis/batch/2026-08-09-traffic-analysis-exercise/zeek \
-  --out analysis/detection-results/2026-08-09
-python3 scripts/build_incident_report.py \
-  --input analysis/detection-results/2026-08-09/alerts.json \
-  --out analysis/detection-results/2026-08-09/incident_candidates.json
-python3 scripts/analyze_post_patterns.py \
-  --logs analysis/batch/2026-08-09-traffic-analysis-exercise/zeek \
-  --out analysis/detection-results/2026-08-09/post_patterns.json
+python -m pytest -q
 ```
 
-These outputs are investigation leads, not proof of compromise, command-and-control, or successful exfiltration. The incident builder only correlates overlapping aggregate time ranges; validate individual events before drawing causal conclusions.
+Install Flutter 3.50.1 or a compatible SDK separately. From `frontend/`:
 
----
+```bash
+flutter pub get
+flutter analyze
+flutter test
+```
 
+## Offline PCAP workflow
 
+Install Zeek, Suricata, and an authorized local Suricata configuration/ruleset. Verify that Suricata file-store is explicitly disabled. Use a PCAP you are authorized to analyze and a new output path outside the repository:
 
-## Reviewed Investigation Reports
+```bash
+python scripts/run_offline_unified_pipeline.py \
+  --pcap /absolute/path/to/authorized-capture.pcap \
+  --out /absolute/path/to/new-output-directory \
+  --zeek-bin /path/to/zeek \
+  --suricata-bin /path/to/suricata \
+  --suricata-config /path/to/suricata.yaml \
+  --suricata-rules /path/to/suricata.rules \
+  --command-timeout-seconds 900
+```
 
+The output directory must be new or empty. The pipeline reads the PCAP; it does not fetch datasets, call MalwareBazaar, or extract/execute transferred files. Reference templates are in `config/`; they are not auto-loaded. See [`docs/project_runbook.md`](docs/project_runbook.md) and [`docs/phase2_pcap_workflow.md`](docs/phase2_pcap_workflow.md).
 
+To start the API against that run:
 
-The following reports document the captures and controlled lab activities reviewed so far. Findings are limited to the evidence available in each capture; suspicious indicators are not, by themselves, proof of host compromise or successful data exfiltration.
+```bash
+export UNIFIED_ALERTS_PATH="/absolute/path/to/new-output-directory/unified/alerts.json"
+export MALWARE_ANALYSIS_STORE_PATH="/absolute/path/to/local-analysis-store/analyses.json"
+python -m uvicorn api.main:app --host 127.0.0.1 --port 8000
+```
 
+Start the Web dashboard from `frontend/` in another terminal:
 
+```bash
+flutter run -d web-server --web-hostname 127.0.0.1 --web-port 8080 \
+  --dart-define=API_BASE_URL=http://127.0.0.1:8000
+```
 
-### PCAP investigations
+For a release build, use `flutter build web --release --dart-define=API_BASE_URL=http://127.0.0.1:8000` and serve its `build/web` directory on loopback. Configure a browser-reachable API URL and matching CORS policy; do not put secrets in Flutter defines.
 
+## Security and limitations
 
+- Keep API and dashboard on loopback. Authentication, authorization, rate limiting, and multi-user controls are not implemented.
+- Keep PCAPs, generated logs, alert bundles, local stores, caches, and builds outside Git.
+- PCAP UI upload and async analysis jobs are deferred; the supported workflow is CLI-based.
+- No sandbox execution is implemented. Dynamic telemetry is displayed only when supplied by an existing API record.
+- YARA executable availability is not project integration; the project has no managed ruleset. ssdeep and digital-signature verification are not integrated.
+- MalwareBazaar matches are third-party metadata, not proof of execution or compromise. No provider credential or successful credentialed lookup is included in this release evidence.
+- Dataset labels and tool alerts do not independently establish attribution, compromise, C2, or exfiltration. Preserve provenance and uncertainty.
 
-- [NetSupport-like traffic](reports/incident_report.md) — repeated HTTP POST activity and remote-administration-related alerts. Suspicious behavior; compromise and unauthorized access are not established.
-
-- [FormBook-related HTTP traffic](reports/formbook_investigation_report.md) — suspicious HTTP POST and GET patterns to 15 destination groups (113 POST requests; 18 Suricata FormBook check-in alerts) and related network indicators; packet evidence does not establish endpoint execution or the full infection chain.
-
-- [Runner iLove executable download](reports/incident_runner_ilove.md) — suspicious executable transfer with documented hash and threat-intelligence correlation; execution and causal C2 remain unconfirmed.
-
-- [WebInvestigation](reports/incident_webinvestigation.md) — SQL injection probing and a suspicious uploaded PHP file; report remains a draft, and successful execution or server compromise is unconfirmed.
-
-- [Netmetria-focused scenario](reports/incident_netmetria.md) — SMB enumeration and file-write observations; report remains a draft, and lateral movement or exfiltration is not confirmed.
-
-
-
-### Controlled lab exercises
-
-
-
-- [Benign network simulation](reports/incident_lab_simulation.md) — local scanning, DNS, and HTTP traffic generation with Zeek and Suricata observations; this is not evidence of real malware or external C2.
-
-- [Controlled beaconing scenario](reports/scenario_02_beaconing.md) — documents the beaconing exercise. The later partial run produced 87 requests at approximately 60-second intervals; RITA analysis of that partial dataset was not completed. MongoDB was restored later, but the partial dataset has not been re-imported or analyzed; its duration is below the configured multi-hour thresholds.
-
-
-
-### Project evidence and operating documentation
-
-
-
-- [Evidence inventory](reports/evidence_inventory.md) — evidence and artifact handling.
-
-- [Detection coverage matrix](reports/detection_coverage_matrix.md) — reviewed detection coverage and gaps.
-
-- [Project status](reports/project_status.md) — current project progress and pending work.
-
-- [Project runbook](docs/project_runbook.md) — commands, workflows, and reproducibility notes.
-
-
-
-These investigations do not yet complete validation of DNS tunneling, real command-and-control, or successful data exfiltration. Broader endpoint correlation and final documentation review remain outstanding.
+See [`docs/backend_api.md`](docs/backend_api.md), [`docs/malwarebazaar_integration.md`](docs/malwarebazaar_integration.md), and [`docs/phase2_dataset_sources.md`](docs/phase2_dataset_sources.md).

@@ -24,6 +24,10 @@ class Alert {
     required this.relatedUid,
     required this.evidence,
     required this.sourceTool,
+    required this.alertOrigin,
+    required this.detectionEngine,
+    required this.evidenceRefs,
+    required this.relatedEvents,
   });
 
   final String alertId, timestampUtc, ruleId, ruleName, severity, confidence;
@@ -31,7 +35,9 @@ class Alert {
   final Object? srcPort, dstPort;
   final String uid, correlation, relatedRuleId, relatedFuid, relatedUid;
   // Evidence stays a string; structured values are read only when valid JSON.
-  final String evidence, sourceTool;
+  final String evidence, sourceTool, alertOrigin, detectionEngine;
+  final List<String> evidenceRefs;
+  final List<Map<String, dynamic>> relatedEvents;
 
   factory Alert.fromJson(Map<String, dynamic> json) {
     final evidence = _string(json['evidence']);
@@ -63,6 +69,10 @@ class Alert {
       relatedUid: _string(json['related_uid']),
       evidence: evidence,
       sourceTool: _string(json['source_tool'], 'unknown'),
+      alertOrigin: _string(json['alert_origin']),
+      detectionEngine: _string(json['detection_engine']),
+      evidenceRefs: _stringList(json['evidence_refs']),
+      relatedEvents: _eventList(json['related_events']),
     );
   }
 
@@ -93,6 +103,11 @@ class Alert {
       relatedRuleId,
       relatedFuid,
       relatedUid,
+      alertOrigin,
+      detectionEngine,
+      ...evidenceRefs,
+      evidence,
+      jsonEncode(relatedEvents),
     ];
     return fields.any(
       (value) =>
@@ -113,4 +128,15 @@ class Alert {
 
   static String _string(Object? value, [String fallback = '']) =>
       value == null ? fallback : value.toString();
+
+  static List<String> _stringList(Object? value) => value is List
+      ? value.whereType<String>().toList(growable: false)
+      : const [];
+
+  static List<Map<String, dynamic>> _eventList(Object? value) => value is List
+      ? value
+            .whereType<Map>()
+            .map((event) => Map<String, dynamic>.from(event))
+            .toList(growable: false)
+      : const [];
 }
