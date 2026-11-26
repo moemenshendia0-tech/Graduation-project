@@ -50,6 +50,7 @@ def test_local_evidence_and_generated_outputs_remain_ignored():
         "evidence/webinvestigation/session.json",
         "zeek/run-1/packet_filter.log",
         "zeek/run-1/weird.log",
+        "zeek/baseline_qa/notice.log",
         "suricata/run-1/eve.json",
         "suricata/run-1/stats.log",
         "suricata_homenet/run-1/alerts.json",
@@ -68,6 +69,8 @@ def test_source_and_intentional_configuration_examples_are_not_ignored():
         "suricata/rules/local.rules",
         "config/suricata-file-store-disabled.example.yaml",
         "simulations/beaconing/smoke_client.py",
+        "zeek/netsupport_timing_finding.txt",
+        "zeek/.gitkeep",
     ]
 
     assert _ignored_paths(retained_paths) == set()

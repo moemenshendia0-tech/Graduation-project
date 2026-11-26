@@ -25,6 +25,7 @@ zeek/**/dns.log
 zeek/**/http.log
 zeek/**/ssl.log
 zeek/**/files.log
+zeek/baseline_*/notice.log
 suricata/**/eve.json
 suricata/**/fast.log
 suricata/**/stats.log
